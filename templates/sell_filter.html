@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}| {{ title|title }}{% endblock title %}
+
+{% block body %}
+
+<div class="container-fluid">
+
+    <!-- Content Row -->
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">{{ title|title }}</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <form action="" method="GET">
+                    <div class="row">
+                        <div class="col-md-3">
+                            {{filter.form.customer_name|as_crispy_field}}
+                        </div>
+                        <div class="col-md-3">
+                            {{filter.form.customer_phone|as_crispy_field}}
+                        </div>
+                        <div class="col-md-3">
+                            {{filter.form.product_name|as_crispy_field}}
+                        </div>
+                        <div class="col-md-3">
+                            <label for="id_date_added">Date</label>
+                            <input class="form-control" type="date" name="date_added" id="id_date_added">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="id_date_added__month">Month</label>
+                            <input class="form-control" type="text" name="date_added__month" id="id_date_added__month">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="id_date_added__month__gt">Start Month</label>
+                            <input class="form-control" type="text" name="date_added__month__gt" id="id_date_added__month__gt">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="id_date_added__month__lt">End Month</label>
+                            <input class="form-control" type="text" name="date_added__month__lt" id="id_date_added__month__lt">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-primary buttons-right"><i class="fa fa-filter"></i> Filter</button>
+                </form>
+                <br>
+                <br>
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Sell Price</th>
+                        <th>Customer Name</th>
+                        <th>Customer Price</th>
+                        <th>Paid Amount</th>
+                        <th>Date</th>
+                        <th>Active</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for obj in filter.qs %}
+                        <tr>
+                            <td>{{ obj.product_name }}</td>
+                            <td>{{ obj.sell_price }}</td>
+                            <td>{{ obj.customer_name }}</td>
+                            <td>{{ obj.customer_phone }}</td>
+                            <td>{{ obj.paid_amount }}</td>
+                            <td>{{ obj.date_added }}</td>
+                            <td>{{ obj.is_active }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock body %}
+
+{% block script %}
+{% endblock script %}

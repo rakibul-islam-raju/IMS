@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}| {{ title|title }}{% endblock title %}
+
+{% block body %}
+
+<div class="container-fluid">
+
+    <!-- Content Row -->
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Users</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <form action="" method="GET">
+                    {{ filter.as_p }}
+                    <button type="submit" class="btn btn-primary"></button>
+                </form>
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Sell Price</th>
+                        <th>Customer Name</th>
+                        <th>Customer Price</th>
+                        <th>Paid Amount</th>
+                        <th>Date</th>
+                        <th>Active</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for obj in filter.qs %}
+                        <tr>
+                            <td>{{ obj.product_name }}</td>
+                            <td>{{ obj.sell_price }}</td>
+                            <td>{{ obj.customer_name }}</td>
+                            <td>{{ obj.customer_phone }}</td>
+                            <td>{{ obj.paid_amount }}</td>
+                            <td>{{ obj.date_added }}</td>
+                            <td>{{ obj.is_active }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock body %}
+
+{% block script %}
+{% endblock script %}
