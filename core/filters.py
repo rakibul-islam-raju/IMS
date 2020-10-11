@@ -10,5 +10,5 @@ class SellProductFilter(django_filters.FilterSet):
             'product_name': ['exact'],
             'customer_name': ['exact'],
             'customer_phone': ['exact'],
-            'date_added': ['exact', 'month', 'month__gt', 'month__lt'],
+            'date_added': ['exact', 'gt', 'lt'],
         }

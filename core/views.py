@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404, reverse
+from django.http import HttpResponse
 from django.views.generic import (View,
                                 TemplateView,
                                 ListView,
@@ -10,9 +11,21 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
 
+from django.contrib.auth.decorators import login_required
+
 from .models import *
 from .forms import *
 from .filters import *
+from .resourses import *
+
+
+@login_required()
+def download_sells_csv(request):
+    sells_resource = SellProductResource()
+    dataset = sells_resource.export()
+    response = HttpResponse(dataset.csv, content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="sells.csv"'
+    return response
 
 
 class SellProductFilterView(LoginRequiredMixin,
@@ -26,7 +39,7 @@ class SellProductFilterView(LoginRequiredMixin,
             'filter': f,
             'title': 'Sell Report'
         }
-        return render(self.request, 'sell_filter.html', context)
+        return render(self.request, 'sell_report.html', context)
     
     def test_func(self, *args, **kwargs):
         if self.request.user.is_staff:
@@ -42,6 +55,7 @@ class HomeView(LoginRequiredMixin,
         context = super().get_context_data(**kwargs)
         context["stocks"] = Stock.objects.filter(is_active=True)
         context["sells"] = SellProduct.objects.filter(is_active=True)
+        context["purchases"] = PurchaseProduct.objects.filter(is_active=True)
         return context
 
 

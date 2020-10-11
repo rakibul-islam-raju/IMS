@@ -12,12 +12,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
 
+    path('download_sells_csv', download_sells_csv, name='sells-csv'),
+
     path('', HomeView.as_view(), name='home'),
     path('users/', UserManagement.as_view(), name='user'),
     path('user/<username>/', EditUserManagent.as_view(), name='user-edit'),
-
-    path('sell/filter/', SellProductFilterView.as_view(), name='sell-filter'),
-    path('sells/filter/', FilterView.as_view(model=SellProduct, template_name='sell_filter'), name='sell-filter'),
 
     path('purchases/', PurchaseProductCreateView.as_view(), name='purchase'),
     path('purchase/<int:pk>/', PurchaseProductUpdateView.as_view(), name='purchase-update'),
@@ -31,6 +30,8 @@ urlpatterns = [
     path('sells/<int:pk>/', SellProductUpdateView.as_view(), name='sell-update'),
     path('sells/product/<int:pk>/', SellProductByID.as_view(), name='sell-product-by-id'),
     path('sells/delete/<int:pk>/', SellProductDeleteView.as_view(), name='sell-delete'),
+
+    path('report/sell/', SellProductFilterView.as_view(), name='sell-report'),
 ]
 
 admin.site.site_header = 'Inventory Admin Panel'

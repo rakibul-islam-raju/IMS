@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_filters',
     'django_seed',
+    'import_export',
 
     # local
     'core',
@@ -149,7 +150,8 @@ ACCOUNT_FORMS = {'signup': 'core.forms.MyCustomSignupForm'}
 
 AUTH_USER_MODEL = 'core.User'
 
-
+# django-import-export
+IMPORT_EXPORT_USE_TRANSACTIONS = True
 
 # email backend
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

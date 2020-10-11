@@ -8,9 +8,9 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 
 
 class Office(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=30, unique=True)
     email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=20, unique=True, blank=True, null=True)
+    phone = models.CharField(max_length=11, unique=True, blank=True, null=True)
     address = models.TextField()
     status = models.BooleanField(default=True)
     date_added = models.DateTimeField(auto_now_add=True)
@@ -56,7 +56,7 @@ class User(AbstractUser):
 
 
 class PurchaseProduct(models.Model):
-    product_name = models.CharField(max_length=200)
+    product_name = models.CharField(max_length=30)
     price = models.DecimalField(max_digits=8, decimal_places=2)
     quantity = models.PositiveIntegerField()
     description = models.TextField(max_length=254, blank=True, null=True)
@@ -77,7 +77,7 @@ class PurchaseProduct(models.Model):
 
 
 class Stock(models.Model):
-    product_name = models.CharField(max_length=200)
+    product_name = models.CharField(max_length=30)
     quantity = models.PositiveIntegerField()
     sell_price = models.DecimalField(max_digits=8, decimal_places=2)
     description = models.TextField(max_length=254, blank=True, null=True)
@@ -101,8 +101,8 @@ class SellProduct(models.Model):
     product_name = models.ForeignKey(Stock, null=True, on_delete=models.SET_NULL)
     quantity = models.PositiveIntegerField()
     sell_price = models.DecimalField(max_digits=8, decimal_places=2)
-    customer_name = models.CharField(max_length=200)
-    customer_phone = models.CharField(max_length=200)
+    customer_name = models.CharField(max_length=30)
+    customer_phone = models.CharField(max_length=11)
     paid_amount = models.DecimalField(max_digits=8, decimal_places=2)
     description = models.TextField(max_length=254, blank=True, null=True)
 
