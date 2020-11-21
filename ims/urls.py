@@ -27,7 +27,8 @@ urlpatterns = [
     path('stocks/<int:pk>/', StockUpdateView.as_view(), name='stock-update'),
     path('stocks/delete/<int:pk>/', StockDeleteView.as_view(), name='stock-delete'),
 
-    path('sells/', SellProductCreateView.as_view(), name='sell'),
+    path('sells/list/',SellsListView.as_view(), name='sell-list'),
+    path('sells/', SellProductCreateView.as_view(), name='sell-create'),
     path('sells/<int:pk>/', SellProductUpdateView.as_view(), name='sell-update'),
     path('sells/product/<int:pk>/', SellProductByID.as_view(), name='sell-product-by-id'),
     path('sells/delete/<int:pk>/', SellProductDeleteView.as_view(), name='sell-delete'),

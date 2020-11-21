@@ -236,14 +236,29 @@ class StockCreateView(LoginRequiredMixin,
         return False
 
 
+class SellsListView(LoginRequiredMixin,
+                    UserPassesTestMixin,
+                    SuccessMessageMixin,
+                    ListView):
+    model = SellProduct
+    # queryset = SellProduct.objects.filter(is_staff=True)
+    context_object_name = 'sells'
+    template_name = 'sell.html'
+
+    def test_func(self):
+        if self.request.user.is_staff:
+            return True
+        return False
+
+
 class SellProductCreateView(LoginRequiredMixin,
                         UserPassesTestMixin,
                         SuccessMessageMixin,
                         CreateView):
     model = SellProduct
     form_class = SellProductCreateForm
-    template_name = 'sell.html'
-    success_url = 'sell'
+    template_name = 'sell-create.html'
+    success_url = 'sell-create'
     success_message = "%(product_name)s was created successfully"
 
     def post(self, *args, **kwargs):
@@ -265,14 +280,14 @@ class SellProductCreateView(LoginRequiredMixin,
                 product_instance.save(update_fields=['quantity'])
             else:
                 messages.warning(self.request, 'Invalid Qunatity')
-                return redirect('sell')
+                return redirect('sell-create')
         messages.success(self.request, f'{product_instance.product_name} was created successfully')        
-        return redirect('sell')
+        return redirect('sell-create')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = 'New Sell'
-        context["sells"] = SellProduct.objects.filter(is_active=True)
+        # context["sells"] = SellProduct.objects.filter(is_active=True)
         return context
 
     def get_success_url(self, **kwargs):
@@ -302,9 +317,9 @@ class SellProductByID(LoginRequiredMixin,
         context = {
             'form': form,
             'title': 'New Sell',
-            'sells': SellProduct.objects.all()
+            # 'sells': SellProduct.objects.all()
         }
-        return render(self.request, 'sell.html', context)
+        return render(self.request, 'sell-create.html', context)
 
     def post(self, *args, **kwargs):
         product_instance = get_object_or_404(Stock, pk=self.kwargs['pk'])
@@ -322,9 +337,9 @@ class SellProductByID(LoginRequiredMixin,
                 product_instance.save(update_fields=['quantity'])
             else:
                 messages.warning(self.request, 'Invalid Qunatity')
-                return redirect('sell')
+                return redirect('sell-create')
         messages.success(self.request, f'{product_instance.product_name} was created successfully')        
-        return redirect('sell')
+        return redirect('sell-create')
 
     def form_valid(self, form):
         form.instance.added_by = self.request.user
@@ -395,14 +410,14 @@ class SellProductUpdateView(LoginRequiredMixin,
                             UpdateView):
     model = SellProduct
     form_class = SellProductCreateForm
-    template_name = 'sell.html'
-    success_url = 'sell'
+    template_name = 'sell-create.html'
+    success_url = 'sell-list'
     success_message = "%(product_name)s was updated successfully"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = 'Edit Sell'
-        context["sells"] = SellProduct.objects.filter(is_active=True)
+        # context["sells"] = SellProduct.objects.filter(is_active=True)
         return context
     
     def get_success_url(self, **kwargs):
@@ -458,7 +473,7 @@ class SellProductDeleteView(LoginRequiredMixin,
                             DeleteView):
     model = SellProduct
     template_name = 'sell.html'
-    success_url = 'sell'
+    success_url = 'sell-list'
     success_message = "%(name)s was deleted successfully"
 
     def get_success_url(self, **kwargs):
