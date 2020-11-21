@@ -110,6 +110,13 @@
       </li>
       {% endif %}
 
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{% url 'help' %}" >
+          <i class="fas fa-fw fa-info-circle"></i>
+          <span>Help Center</span>
+        </a>
+      </li>
+
 
       <!-- Sidebar Toggler (Sidebar) -->
       <div class="text-center d-none d-md-inline">
@@ -160,9 +167,9 @@
         <div class="container-fluid">
           {% include './includes/messages.html' %}
         </div>
+
         {% block body %}
         {% endblock body %}
-        <!-- /.container-fluid -->
 
       </div>
       <!-- End of Main Content -->

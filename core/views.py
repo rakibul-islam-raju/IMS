@@ -10,14 +10,39 @@ from django.views.generic import (View,
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
-
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
 
 from .models import *
 from .forms import *
 from .filters import *
 from .resourses import *
 
+
+@login_required()
+def get_help(request):
+    if request.method == 'POST':
+        form = HelpcenterForm(request.POST or None)
+        if form.is_valid():
+            # name = form.cleaned_data['name']
+            subject = form.cleaned_data['subject']
+            message = form.cleaned_data['message']
+            email = form.cleaned_data['email']
+            recipients = ['rakibul.islam7772588@gmail.com']
+
+            # final_message = f''
+
+            send_mail(subject, message, email, recipients)
+            messages.success(request, 'Email successfully sent.')
+        else:
+            messages.warning(request, 'Something went wrong. Please try again.')
+    form = HelpcenterForm()
+
+    context = {
+        'title': 'Help Center',
+        'form': form
+    }
+    return render(request, 'help.html', context)
 
 @login_required()
 def download_sells_csv(request):

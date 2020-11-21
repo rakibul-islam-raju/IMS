@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}| {{ title }}{% endblock title %}
+
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5">
+                <div class="card shadow mb-4">
+                    <div class="card-header">
+                        <strong class="text-primary">Manager</strong>
+                    </div>
+                    <div class="card-body">
+                        <h4>John Doe</h4>
+                        <p class="">
+                            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Beatae expedita nisi.
+                            Lorem ipsum dolor sit amet
+                        </p>
+                        <i class="fas fa-envelope text-secondary"></i> &nbsp; &nbsp; john@mail.com <br>
+                        <i class="fab fa-whatsapp-square text-success"></i> &nbsp; &nbsp; 01771010212 <br>
+                        <i class="fas fa-phone text-info"></i> &nbsp; &nbsp; 01331010212 <br>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="card shadow">
+                    <div class="card-header">
+                        <strong class="text-primary">Developer</strong>
+                    </div>
+                    <div class="card-body">
+                        <h4>John Doe</h4>
+                        <p class="">
+                            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Beatae expedita nisi.
+                            Lorem ipsum dolor sit amet
+                        </p>
+                        <i class="fas fa-envelope text-secondary"></i> &nbsp; &nbsp; john@mail.com <br>
+                        <i class="fab fa-whatsapp-square text-success"></i> &nbsp; &nbsp; 01771010212 <br>
+                        <i class="fas fa-phone text-info"></i> &nbsp; &nbsp; 01331010212 <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card mb-4 shadow">
+                    <div class="card-header">
+                        <strong class="text-primary">Send Email</strong>
+                    </div>
+                    <div class="card-body">
+                        <form action="" method="POST">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            <div class="buttons-right">
+                                <button type="submit" class="btn btn-primary">Send</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body %}

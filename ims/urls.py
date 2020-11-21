@@ -12,6 +12,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
 
+    path('help/', get_help, name='help'),
     path('download_sells_csv', download_sells_csv, name='sells-csv'),
 
     path('', HomeView.as_view(), name='home'),
