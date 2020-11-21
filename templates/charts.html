@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}| Charts{% endblock title %}
+
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Stock Chart</h6>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="myChart" height="150"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock body %}
+
+{% block script %}
+<script>
+
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [
+                {% for product in stocks %}
+                    '{{product.product_name}}',
+                {% endfor %}
+            ],
+            datasets: [{
+                label: 'Products',
+                data: [
+                    {% for product in stocks %}
+                    {{product.quantity}},
+                    {% endfor %}
+                ],
+                backgroundColor: 'rgb(16, 80, 173)',
+
+                
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+</script>
+{% endblock script %}

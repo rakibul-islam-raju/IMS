@@ -16,7 +16,7 @@
     <div class="row">
 
         <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-4 col-md-4 mb-4">
             <div class="card border-left-primary shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
@@ -33,7 +33,7 @@
         </div>
 
         <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-4 col-md-4 mb-4">
             <div class="card border-left-success shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
@@ -50,7 +50,7 @@
         </div>
 
         <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-3 col-md-6 mb-4">
+        <div class="col-xl-4 col-md-4 mb-4">
             <div class="card border-left-info shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
@@ -70,7 +70,7 @@
     <!-- Products list -->
 
     <div class="row">
-        <div class="col-lg-7">
+        <div class="col-md-12">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">Available Products</h6>
@@ -109,70 +109,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-5">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Product Amount Chart</h6>
-                </div>
-                <div class="card-body">
-                    <canvas id="myChart" height="400"></canvas>
-                </div>
-            </div>
-        </div>
     </div>
 
 </div>
 
 {% endblock body %}
-
-{% block script %}
-<script>
-    function getRandomColor() {
-        var letters = '0123456789ABCDEF'.split('');
-        var color = '#';
-        for (var i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-    }
-
-    function getRandomColorEachProduct(count) {
-        var data =[];
-        for (var i = 0; i < count; i++) {
-            data.push(getRandomColor());
-        }
-        return data;
-    }
-
-
-    var ctx = document.getElementById('myChart').getContext('2d');
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: [
-                {% for product in stocks %}
-                    '{{product.product_name}}',
-                {% endfor %}
-            ],
-            datasets: [{
-                label: 'Products',
-                data: [
-                    {% for product in stocks %}
-                    {{product.quantity}},
-                    {% endfor %}
-                ],
-                backgroundColor: 'rgb(16, 80, 173)',
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            }
-        }
-    });
-</script>
-{% endblock script %}

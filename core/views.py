@@ -12,11 +12,60 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
+import json
+from datetime import date
+from django.template.loader import get_template
+from xhtml2pdf import pisa
 
 from .models import *
 from .forms import *
 from .filters import *
 from .resourses import *
+
+
+class ChartView(TemplateView,
+                LoginRequiredMixin,
+                UserPassesTestMixin):
+    template_name = 'charts.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["stocks"] = Stock.objects.filter(is_active=True)
+        context["sells"] = SellProduct.objects.filter(is_active=True)
+        context["purchases"] = PurchaseProduct.objects.filter(is_active=True)
+        return context
+    
+    def test_func(self):
+        if self.request.user.is_staff:
+            return True
+        return False
+
+
+@login_required()
+def sell_invoice(request, *args, **kwargs):
+    pk = kwargs.get('pk')
+    sell = get_object_or_404(SellProduct, pk=pk)
+
+    template_path = 'sell-invoice.html'
+    context = {'sell': sell}
+    # Create a Django response object, and specify content_type as pdf
+    response = HttpResponse(content_type='application/pdf')
+    # if we want to download the pdf :
+    # response['Content-Disposition'] = 'attachment; filename="report.pdf"'
+    # if we want to display the pdf :
+    filename = f'invoice-{pk}-{date.today()}'
+    response['Content-Disposition'] = f'filename="{filename}.pdf"'
+    # find the template and render it.
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # create a pdf
+    pisa_status = pisa.CreatePDF(
+        html, dest=response)
+    # if error then show some funy view
+    if pisa_status.err:
+        return HttpResponse('We had some errors <pre>' + html + '</pre>')
+    return response
 
 
 @login_required()

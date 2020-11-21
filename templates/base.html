@@ -11,7 +11,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>IMS {% block title %}{% endblock title %}</title>
+  <title>IMS{% block title %}{% endblock title %}</title>
 
   <!-- Custom fonts for this template-->
   <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
@@ -69,9 +69,9 @@
         </a>
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="{% url 'stock' %}">Stocks</a>
             {% if request.user.is_staff %}
             <a class="collapse-item" href="{% url 'sell' %}">Sells</a>
+            <a class="collapse-item" href="{% url 'stock' %}">Stocks</a>
             <a class="collapse-item" href="{% url 'purchase' %}">Purchases</a>
             {% endif %}
           </div>
@@ -107,6 +107,15 @@
             <a class="collapse-item" href="{% url 'sell-report' %}">Sells</a>
           </div>
         </div>
+      </li>
+      {% endif %}
+
+      {% if request.user.is_staff %}
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{% url 'charts' %}" >
+          <i class="fas fa-fw fa-chart-bar"></i>
+          <span>Charts</span>
+        </a>
       </li>
       {% endif %}
 

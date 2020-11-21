@@ -8,7 +8,7 @@
 <div class="container-fluid">
 
     <!-- Content Row -->
-    <div class="card shadow mb-4">
+    {% comment %} <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">{{ title|title }}</h6>
         </div>
@@ -63,7 +63,7 @@
                 </div>
             </form>
         </div>
-    </div>
+    </div> {% endcomment %}
 
     <div class="card shadow mb-4">
                 <div class="card-header py-3">
@@ -82,7 +82,6 @@
                                 <th>Due Amount <small>Taka</small></th>
                                 <th>Customer Name</th>
                                 <th>Phone Number</th>
-                                <th>Description</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -98,41 +97,50 @@
                                     <td {% if sell.get_due_amount > 0 %}class="text-danger"{% endif %}>{{ sell.get_due_amount }}</td>
                                     <td>{{ sell.customer_name }}</td>
                                     <td>{{ sell.customer_phone }}</td>
-                                    <td>{{ sell.description }}</td>
                                     <td>
-                                        <a href="{{ sell.get_update_url }}" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a>
+                                        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                                            <div class="btn-group" role="group" aria-label="First group">
+                                                {% comment %} <a href="{{ product.get_update_url }}" class="btn btn-sm mb-1 btn-outline-info"><i class="fa fa-edit"></i></a>
+                                                <a target="_blank" href="{{ product.get_invoice_url }}" class="btn btn-sm mb-1 btn-outline-success"><i class="fa fa-file-alt"></i></a>
+                                                <a href="{{ product.get_delete_url }}" class="btn btn-sm mb-1 btn-outline-danger"><i class="fa fa-trash-alt"></i></a> {% endcomment %}
+                                                <a href="{{ sell.get_update_url }}" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a>
+                                                <a target="_blank" href="{% url 'sell-invoice' sell.pk %}" class="btn btn-sm btn-outline-info"><i class="fa fa-file-alt"></i></a>
 
-                                        {% if request.user.is_superuser %}
-                                        <a class="btn btn-sm btn-outline-danger" href="#" data-toggle="modal" data-target="#deleteModal">
-                                            <i class="fa fa-trash-alt"></i>
-                                        </a>
+                                                {% if request.user.is_superuser %}
+                                                <a class="btn btn-sm btn-outline-danger" href="#" data-toggle="modal" data-target="#deleteModal">
+                                                    <i class="fa fa-trash-alt"></i>
+                                                </a>
 
-                                        <!-- delete Modal-->
-                                        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLabel">Ready to Delete?</h5>
-                                                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                                                            <span aria-hidden="true">×</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                    Select "Delete" below if you are ready to delete this item.
-                                                    <p class="text-danger"><span class="badge badge-danger mr-2">Warning: </span>This action will permanently delete your item.</p>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <form action="{{ sell.get_delete_url}}" method="POST">
-                                                            {% csrf_token %}
-                                                            <button type="submit" class="btn btn-danger">Delete</button>
-                                                            <button class="btn btn-primary" type="button" data-dismiss="modal">Cancel</button>
-                                                        </form>
+                                                <!-- delete Modal-->
+                                                <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="exampleModalLabel">Ready to Delete?</h5>
+                                                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">×</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                            Select "Delete" below if you are ready to delete this item.
+                                                            <p class="text-danger"><span class="badge badge-danger mr-2">Warning: </span>This action will permanently delete your item.</p>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <form action="{{ sell.get_delete_url}}" method="POST">
+                                                                    {% csrf_token %}
+                                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                                    <button class="btn btn-primary" type="button" data-dismiss="modal">Cancel</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
+                                                
+                                                {% endif %}
                                             </div>
                                         </div>
-                                        
-                                        {% endif %}
+
+
                                     </td>
                                 </tr>
                                 {% endfor %}
