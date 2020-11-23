@@ -43,8 +43,8 @@ class PurchaseCreateForm(forms.ModelForm):
                 'quantity',
                 'description']
         widgets = {
-            'price': forms.TextInput(attrs={'placeholder': 'Taka'}),
-            'quantity': forms.TextInput(attrs={'placeholder': 'kg'}),
+            # 'price': forms.TextInput(attrs={'placeholder': 'Taka'}),
+            # 'quantity': forms.TextInput(attrs={'placeholder': 'kg'}),
             'description': forms.Textarea(attrs={'rows': '2'}),
         }    
 
@@ -58,8 +58,8 @@ class StockCreateForm(forms.ModelForm):
                 'quantity',
                 'description']
         widgets = {
-            'sell_price': forms.TextInput(attrs={'placeholder': 'Taka'}),
-            'quantity': forms.TextInput(attrs={'placeholder': 'kg'}),
+            # 'sell_price': forms.TextInput(attrs={'placeholder': 'Taka'}),
+            # 'quantity': forms.TextInput(attrs={'placeholder': 'kg'}),
             'description': forms.Textarea(attrs={'rows': '2'}),
         }    
 
@@ -76,8 +76,8 @@ class SellProductCreateForm(forms.ModelForm):
                 'paid_amount',
                 'description']
         widgets = {
-            'sell_price': forms.TextInput(attrs={'placeholder': 'Taka'}),
-            'quantity': forms.TextInput(attrs={'placeholder': 'kg'}),
-            'paid_amount': forms.TextInput(attrs={'placeholder': 'Taka'}),
+            # 'sell_price': forms.TextInput(attrs={'placeholder': 'Taka'}),
+            # 'quantity': forms.TextInput(attrs={'placeholder': 'kg'}),
+            # 'paid_amount': forms.TextInput(attrs={'placeholder': 'Taka'}),
             'description': forms.Textarea(attrs={'rows': '2'}),
         }

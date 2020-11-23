@@ -5,7 +5,7 @@
 
 {% block body %}
 
-<div class="container-fluid">
+<div class="container-fluid" id="createSell">
 
     <!-- Content Row -->
     <div class="card shadow mb-4">
@@ -13,7 +13,7 @@
             <h6 class="m-0 font-weight-bold text-primary">{{ title|title }}</h6>
         </div>
         <div class="card-body">
-            <form action="" method="POST">
+            <form action="" method="POST" @change="calculateDue" novalidate>
                 {% csrf_token %}
                 <div class="row">
                     <div class="col-lg-6">
@@ -23,14 +23,21 @@
                     </div>
                     <div class="col-lg-3">
                         <div class="form-group">
-                            {{ form.sell_price|as_crispy_field }}
+                            {{ form.quantity|as_crispy_field }}
                         </div>
                     </div>
                     <div class="col-lg-3">
                         <div class="form-group">
-                            {{ form.quantity|as_crispy_field }}
+                            {% comment %} {{ form.sell_price|as_crispy_field }} {% endcomment %}
+                            <div id="div_id_sell_price" class="form-group">
+                                <label for="id_sell_price" class=" requiredField"> Sell price<span class="asteriskField">*</span></label>
+                                <div class="">
+                                    <input type="text" name="sell_price" value="{% if form.sell_price.value %}{{ form.sell_price.value }}{% endif %}" class="textinput textInput form-control" id="id_sell_price">
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    
                 </div>
 
                 <div class="row">
@@ -46,10 +53,25 @@
                     </div>
                     <div class="col-lg-3">
                         <div class="form-group">
-                            {{ form.paid_amount|as_crispy_field }}
+                            {% comment %} {{ form.paid_amount|as_crispy_field }} {% endcomment %}
+                            <div id="div_id_paid_amount" class="form-group">
+                                <label for="id_paid_amount" class=" requiredField"> Paid amount<span class="asteriskField">*</span></label>
+                                <div class="">
+                                    <input @keyup="calculateDue()" type="text" name="paid_amount" class="textinput textInput form-control" required="" id="id_paid_amount">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div class="buttons-right" v-if="dueField">
+                    {% comment %} <div class="col-lg-3"> {% endcomment %}
+                        <div class="form-group">
+                        <label for="dueAmount">Due amount</label>
+                            <input v-model="dueAmount" type="text" class="form-control" readonly id="dueAmount">
+                        </div>
+                    {% comment %} </div> {% endcomment %}
+                </div>
+
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="form-group">
@@ -58,8 +80,8 @@
                     </div>
                 </div>
                 <div class="buttons-right">
-                    <button class="btn btn-primary pull-right" type="submit">Submit</button>
-                    <a href="{% url 'sell-create' %}" class="btn btn-secondary">Cancel</a>
+                    <button class="btn btn-primary mr-1" type="submit">Submit</button>
+                    <a href="{% url 'home' %}" class="btn btn-secondary">Cancel</a>
                 </div>
             </form>
         </div>
@@ -69,5 +91,42 @@
 
 {% endblock body %}
 
+
+
 {% block script %}
+
+<script type="text/javascript">
+
+const createSell = {
+    data(){
+        return{
+            dueAmount: '',
+            dueField: false
+        }
+    },
+    methods: {
+        calculateDue(){
+            var paid = document.getElementById('id_paid_amount').value
+            if (paid > 0){
+                this.dueField = true;
+                var sellprice = document.getElementById('id_sell_price').value
+                var quantity = document.getElementById('id_quantity').value
+                var totalAmount = (sellprice * quantity)
+                var due = totalAmount - paid
+                console.log(paid)
+                this.dueAmount = due
+            }else{
+                this.dueField = false;
+            }
+        },
+    },
+    delimiters: ['[[', ']]']
+}
+
+
+Vue.createApp(createSell).mount('#createSell')
+
+</script>
+
+
 {% endblock script %}

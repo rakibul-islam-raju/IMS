@@ -102,7 +102,7 @@ def download_sells_csv(request):
     return response
 
 
-class SellProductFilterView(LoginRequiredMixin,
+class SellProductReportView(LoginRequiredMixin,
                         UserPassesTestMixin,
                         SuccessMessageMixin,
                         View):
@@ -114,6 +114,27 @@ class SellProductFilterView(LoginRequiredMixin,
             'title': 'Sell Report'
         }
         return render(self.request, 'sell_report.html', context)
+    
+    def test_func(self, *args, **kwargs):
+        if self.request.user.is_staff:
+            return True
+        return False
+
+
+class SellReportChartView(LoginRequiredMixin,
+                    UserPassesTestMixin,
+                    SuccessMessageMixin,
+                    View):
+
+    def get(self, request, *args, **kwargs):
+        f = SellProductFilter(self.request.GET, queryset=SellProduct.objects.all())
+        # sells = SellProduct.objects.all(is_active=True)
+        context = {
+            # 'filter': f,
+            'filter': f,
+            'title': 'Sell Report Chart',
+        }
+        return render(self.request, 'sell_report_chart.html', context)
     
     def test_func(self, *args, **kwargs):
         if self.request.user.is_staff:
@@ -214,7 +235,7 @@ class StockCreateView(LoginRequiredMixin,
     form_class = StockCreateForm
     template_name = 'stock.html'
     success_url = 'stock'
-    success_message = "%(product_name)s was created successfully"
+    success_message = "%(product_name)s was stocked successfully"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -244,6 +265,11 @@ class SellsListView(LoginRequiredMixin,
     # queryset = SellProduct.objects.filter(is_staff=True)
     context_object_name = 'sells'
     template_name = 'sell.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = 'Sells'
+        return context
 
     def test_func(self):
         if self.request.user.is_staff:
@@ -278,25 +304,26 @@ class SellProductCreateView(LoginRequiredMixin,
                 new_qntty = product_instance.quantity - quantity
                 product_instance.quantity = new_qntty
                 product_instance.save(update_fields=['quantity'])
+                messages.success(self.request, f'{product_instance.product_name} sold successfully')        
+                return redirect('sell-create')
             else:
                 messages.warning(self.request, 'Invalid Qunatity')
                 return redirect('sell-create')
-        messages.success(self.request, f'{product_instance.product_name} was created successfully')        
+        messages.warning(self.request, 'Invalid form')        
         return redirect('sell-create')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = 'New Sell'
-        # context["sells"] = SellProduct.objects.filter(is_active=True)
         return context
 
     def get_success_url(self, **kwargs):
         return reverse(self.success_url)
 
-    def form_valid(self, form):
-        form.instance.added_by = self.request.user
-        form.instance.save()
-        return super(SellProductCreateView, self).form_valid(form)
+    # def form_valid(self, form):
+    #     form.instance.added_by = self.request.user
+    #     form.instance.save()
+    #     return super(SellProductCreateView, self).form_valid(form)
 
     def test_func(self):
         if self.request.user.is_staff:
@@ -335,16 +362,15 @@ class SellProductByID(LoginRequiredMixin,
                 new_qntty = product_instance.quantity - quantity
                 product_instance.quantity = new_qntty
                 product_instance.save(update_fields=['quantity'])
+                messages.success(self.request, f'{product_instance.product_name} sold successfully')        
+                return redirect('sell-list')
             else:
                 messages.warning(self.request, 'Invalid Qunatity')
-                return redirect('sell-create')
-        messages.success(self.request, f'{product_instance.product_name} was created successfully')        
-        return redirect('sell-create')
+                return redirect('./')
+        else:
+            messages.warning(self.request, 'Invalid Form')        
+            return redirect('./')
 
-    def form_valid(self, form):
-        form.instance.added_by = self.request.user
-        form.instance.save()
-        return super(SellProductByID, self).form_valid(form)
 
     def test_func(self):
         if self.request.user.is_staff:

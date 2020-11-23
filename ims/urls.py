@@ -33,10 +33,11 @@ urlpatterns = [
     path('sells/product/<int:pk>/', SellProductByID.as_view(), name='sell-product-by-id'),
     path('sells/delete/<int:pk>/', SellProductDeleteView.as_view(), name='sell-delete'),
 
-    path('sells/report/', SellProductFilterView.as_view(), name='sell-report'),
+    path('sells/report/', SellProductReportView.as_view(), name='sell-report'),
     path('sells/invoice/<int:pk>', sell_invoice, name='sell-invoice'),
 
     path('charts/', ChartView.as_view(), name='charts'),
+    path('sells/chart/', SellReportChartView.as_view(), name='sell-chart'),
 ]
 
 admin.site.site_header = 'Inventory Admin Panel'

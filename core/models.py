@@ -9,8 +9,8 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 
 class Office(models.Model):
     name = models.CharField(max_length=30, unique=True)
-    email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=11, unique=True, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    phone = models.CharField(max_length=11)
     address = models.TextField()
     status = models.BooleanField(default=True)
     date_added = models.DateTimeField(auto_now_add=True)
@@ -99,6 +99,7 @@ class Stock(models.Model):
 
 class SellProduct(models.Model):
     product_name = models.ForeignKey(Stock, null=True, on_delete=models.SET_NULL)
+    product_label = models.CharField(max_length=254, blank=True, null=True)
     quantity = models.PositiveIntegerField()
     sell_price = models.DecimalField(max_digits=8, decimal_places=2)
     customer_name = models.CharField(max_length=30)
@@ -112,7 +113,13 @@ class SellProduct(models.Model):
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return str(self.product_name)
+        if self.product_name:
+            return str(self.product_name)
+        return self.product_label
+
+    def save(self, *args, **kwargs):
+        self.product_label = str(self.product_name)
+        super(SellProduct, self).save(*args, **kwargs)
 
     def get_update_url(self):
         return reverse("sell-update", kwargs={"pk": self.pk})
