@@ -42,9 +42,16 @@ class PurchaseCreateForm(forms.ModelForm):
                 'price',
                 'quantity',
                 'description']
+        labels = {
+            'product_name': 'Product (পণ্য)',
+            'price': 'Price (মূল্য)',
+            'quantity': 'Quantity (পরিমাণ)',
+            'description': 'Description (বর্ণনা)'
+        }
         widgets = {
-            # 'price': forms.TextInput(attrs={'placeholder': 'Taka'}),
-            # 'quantity': forms.TextInput(attrs={'placeholder': 'kg'}),
+            'product_name': forms.TextInput(attrs={'placeholder': 'Name'}),
+            'price': forms.TextInput(attrs={'placeholder': 'Taka'}),
+            'quantity': forms.TextInput(attrs={'placeholder': 'kg'}),
             'description': forms.Textarea(attrs={'rows': '2'}),
         }    
 
@@ -58,10 +65,17 @@ class StockCreateForm(forms.ModelForm):
                 'quantity',
                 'description']
         widgets = {
-            # 'sell_price': forms.TextInput(attrs={'placeholder': 'Taka'}),
-            # 'quantity': forms.TextInput(attrs={'placeholder': 'kg'}),
+            'product_name': forms.TextInput(attrs={'placeholder': 'Name'}),
+            'sell_price': forms.TextInput(attrs={'placeholder': 'Taka'}),
+            'quantity': forms.TextInput(attrs={'placeholder': 'kg'}),
             'description': forms.Textarea(attrs={'rows': '2'}),
-        }    
+        }
+        labels = {
+                'product_name': 'Product (পণ্য)',
+                'quantity': 'Quantity (পরিমাণ)',
+                'sell_price': 'Sell Price (বিক্রয় মূল্য)',
+                'description': 'Description (বর্ণনা)',
+        } 
 
 
 class SellProductCreateForm(forms.ModelForm):
@@ -69,15 +83,27 @@ class SellProductCreateForm(forms.ModelForm):
     class Meta:
         model = SellProduct
         fields = ['product_name',
-                'sell_price',
                 'quantity',
+                'sell_price',
                 'customer_name',
                 'customer_phone',
                 'paid_amount',
                 'description']
+        labels = {
+                'product_name': 'Product (পণ্য)',
+                'quantity': 'Quantity (পরিমাণ)',
+                'sell_price': 'Sell Price (বিক্রয় মূল্য)',
+                'customer_name': 'Customer Name (ক্রেতার নাম)',
+                'customer_phone': 'Customer Phone (ক্রেতার নাম্বার)',
+                'paid_amount': 'Paid Amount (পরিশোধিত টাকা)',
+                'description': 'Description (বর্ণনা)',
+        }
         widgets = {
-            # 'sell_price': forms.TextInput(attrs={'placeholder': 'Taka'}),
-            # 'quantity': forms.TextInput(attrs={'placeholder': 'kg'}),
-            # 'paid_amount': forms.TextInput(attrs={'placeholder': 'Taka'}),
+            'sell_price': forms.TextInput(attrs={'placeholder': 'Taka'}),
+            'paid_amount': forms.TextInput(attrs={'placeholder': 'Taka'}),
+            'customer_name': forms.TextInput(attrs={'placeholder': 'Name'}),
+            'customer_phone': forms.TextInput(attrs={'placeholder': 'Phone'}),
+            'quantity': forms.TextInput(attrs={'placeholder': 'kg'}),
+            'paid_amount': forms.TextInput(attrs={'placeholder': 'Taka'}),
             'description': forms.Textarea(attrs={'rows': '2'}),
         }

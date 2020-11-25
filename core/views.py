@@ -9,9 +9,10 @@ from django.views.generic import (View,
                                 DeleteView)
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.core.mail import send_mail
+from django.db.models import Sum
 import json
 from datetime import date
 from django.template.loader import get_template
@@ -108,9 +109,18 @@ class SellProductReportView(LoginRequiredMixin,
                         View):
 
     def get(self, request, *args, **kwargs):
-        f = SellProductFilter(self.request.GET, queryset=SellProduct.objects.all())
+        queryset = SellProduct.objects.filter(is_active=True)
+        f = SellProductFilter(self.request.GET, queryset)
+
+        total_sell = sum([item.get_total_amount for item in f.qs])
+        total_paid = sum([item.paid_amount for item in f.qs])
+        total_due = sum([item.get_due_amount for item in f.qs])
+
         context = {
             'filter': f,
+            'total_sell': total_sell,
+            'total_paid': total_paid,
+            'total_due': total_due,
             'title': 'Sell Report'
         }
         return render(self.request, 'sell_report.html', context)
@@ -121,13 +131,13 @@ class SellProductReportView(LoginRequiredMixin,
         return False
 
 
-class SellReportChartView(LoginRequiredMixin,
+class SellReportView(LoginRequiredMixin,
                     UserPassesTestMixin,
                     SuccessMessageMixin,
                     View):
 
     def get(self, request, *args, **kwargs):
-        f = SellProductFilter(self.request.GET, queryset=SellProduct.objects.all())
+        f = SellProductFilter(self.request.GET, queryset=SellProduct.objects.filter(is_active=True))
         # sells = SellProduct.objects.all(is_active=True)
         context = {
             # 'filter': f,

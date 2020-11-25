@@ -17,8 +17,8 @@
                             <thead>
                             <tr>
                                 <th>Product Name</th>
-                                <th>Quantity</th>
-                                <th>Price</th>
+                                <th>Product Quantity</th>
+                                <th>Sell Price</th>
                                 <th>Total Amount</th>
                                 <th>Paid Amount</th>
                                 <th>Due Amount</th>
@@ -36,7 +36,9 @@
                                     <td>{{ sell.sell_price }}</td>
                                     <td>{{ sell.get_total_amount }}</td>
                                     <td>{{ sell.paid_amount }}</td>
-                                    <td {% if sell.get_due_amount > 0 %}class="text-danger"{% endif %}>{{ sell.get_due_amount }}</td>
+                                    <td {% if sell.get_due_amount > 0 %}class="text-danger"{% endif %} {% if sell.get_due_amount < 0 %}class="text-info"{% endif %}>
+                                        {{ sell.get_due_amount }}
+                                    </td>
                                     <td>{{ sell.customer_name }}</td>
                                     <td>{{ sell.customer_phone }}</td>
                                     <td>
@@ -46,7 +48,7 @@
                                                 <a target="_blank" href="{{ product.get_invoice_url }}" class="btn btn-sm mb-1 btn-outline-success"><i class="fa fa-file-alt"></i></a>
                                                 <a href="{{ product.get_delete_url }}" class="btn btn-sm mb-1 btn-outline-danger"><i class="fa fa-trash-alt"></i></a> {% endcomment %}
                                                 <a href="{{ sell.get_update_url }}" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a>
-                                                <a target="_blank" href="{% url 'sell-invoice' sell.pk %}" class="btn btn-sm btn-outline-info"><i class="fa fa-file-alt"></i></a>
+                                                {% comment %} <a target="_blank" href="{% url 'sell-invoice' sell.pk %}" class="btn btn-sm btn-outline-info"><i class="fa fa-file-alt"></i></a> {% endcomment %}
 
                                                 {% if request.user.is_superuser %}
                                                 <a class="btn btn-sm btn-outline-danger" href="#" data-toggle="modal" data-target="#deleteModal">

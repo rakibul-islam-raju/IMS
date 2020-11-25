@@ -13,7 +13,7 @@
             <h6 class="m-0 font-weight-bold text-primary">{{ title|title }}</h6>
         </div>
         <div class="card-body">
-            <form action="" method="POST" @change="calculateDue" novalidate>
+            <form action="" method="POST" @change="calculateDue">
                 {% csrf_token %}
                 <div class="row">
                     <div class="col-lg-6">
@@ -28,13 +28,22 @@
                     </div>
                     <div class="col-lg-3">
                         <div class="form-group">
+                            {{ form.sell_price|as_crispy_field }}
                             {% comment %} {{ form.sell_price|as_crispy_field }} {% endcomment %}
-                            <div id="div_id_sell_price" class="form-group">
-                                <label for="id_sell_price" class=" requiredField"> Sell price<span class="asteriskField">*</span></label>
-                                <div class="">
-                                    <input type="text" name="sell_price" value="{% if form.sell_price.value %}{{ form.sell_price.value }}{% endif %}" class="textinput textInput form-control" id="id_sell_price">
-                                </div>
-                            </div>
+                            {% comment %} <div id="div_id_sell_price" class="form-group"> {% endcomment %}
+                                {% comment %} <label for="id_sell_price" class=" requiredField"> {{form.sell_price.label}}<span class="asteriskField">*</span></label> {% endcomment %}
+                                {% comment %} {{form.sell_price.label}} {% endcomment %}
+                                {% comment %} <div class="">
+                                    <input 
+                                        type="text" 
+                                        name="sell_price" 
+                                        value="{% if form.sell_price.value %}{{ form.sell_price.value }}{% endif %}" 
+                                        class="textinput textInput form-control" 
+                                        id="id_sell_price"
+                                        placeholder="Taka"
+                                    >
+                                </div> {% endcomment %}
+                            {% comment %} </div> {% endcomment %}
                         </div>
                     </div>
                     
@@ -55,9 +64,18 @@
                         <div class="form-group">
                             {% comment %} {{ form.paid_amount|as_crispy_field }} {% endcomment %}
                             <div id="div_id_paid_amount" class="form-group">
-                                <label for="id_paid_amount" class=" requiredField"> Paid amount<span class="asteriskField">*</span></label>
+                                <label for="id_paid_amount" class=" requiredField"> {{form.paid_amount.label}}<span class="asteriskField">*</span></label>
                                 <div class="">
-                                    <input @keyup="calculateDue()" type="text" name="paid_amount" class="textinput textInput form-control" required="" id="id_paid_amount">
+                                    <input 
+                                        @keyup="calculateDue()" 
+                                        type="text" 
+                                        name="paid_amount" 
+                                        class="textinput textInput form-control" 
+                                        id="id_paid_amount"
+                                        placeholder="Taka"
+                                        value="{% if form.paid_amount.value %}{{ form.paid_amount.value }}{% endif %}"
+                                        required="" 
+                                    >
                                 </div>
                             </div>
                         </div>
@@ -66,7 +84,7 @@
                 <div class="buttons-right" v-if="dueField">
                     {% comment %} <div class="col-lg-3"> {% endcomment %}
                         <div class="form-group">
-                        <label for="dueAmount">Due amount</label>
+                        <label for="dueAmount">Due amount (বাকির পরিমাণ)</label>
                             <input v-model="dueAmount" type="text" class="form-control" readonly id="dueAmount">
                         </div>
                     {% comment %} </div> {% endcomment %}
@@ -81,7 +99,7 @@
                 </div>
                 <div class="buttons-right">
                     <button class="btn btn-primary mr-1" type="submit">Submit</button>
-                    <a href="{% url 'home' %}" class="btn btn-secondary">Cancel</a>
+                    <a href="{% url 'sell-list' %}" class="btn btn-secondary">Cancel</a>
                 </div>
             </form>
         </div>

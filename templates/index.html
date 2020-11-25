@@ -80,9 +80,10 @@
                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <thead>
                             <tr>
-                                <th>Product</th>
-                                <th>Qunatity</th>
-                                <th>Price</th>
+                                <th>Product (পণ্য)</th>
+                                <th>Qunatity (পরিমাণ)</th>
+                                <th>Price (বিক্রয় মূল্য)</th>
+                                <th>Description (বর্ণনা)</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -93,6 +94,7 @@
                                     <td>{{ product.product_name }}</td>
                                     <td>{{ product.quantity }}</td>
                                     <td>{{ product.sell_price }}</td>
+                                    <td>{{ product.description }}</td>
                                     <td class="text-center">
                                         {% if product.quantity > 0 %}
                                         <a href="{% url 'sell-product-by-id' product.pk %}" class="btn btn-sm btn-primary">Sell</a>

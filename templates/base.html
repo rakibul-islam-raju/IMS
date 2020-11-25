@@ -41,9 +41,9 @@
       <!-- Sidebar - Brand -->
       <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'home' %}">
         <div class="sidebar-brand-icon rotate-n-15">
-          <i class="fas fa-laugh-wink"></i>
+          <i class="fas fa-seedling"></i>
         </div>
-        <div class="sidebar-brand-text mx-3">Company Name</div>
+        <div class="sidebar-brand-text mx-3">Tafsir Agro Food Ltd.</div>
       </a>
 
       <!-- Divider -->
@@ -68,13 +68,13 @@
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseSell" aria-expanded="true" aria-controls="collapseSell">
           <i class="fas fa-fw fa-folder"></i>
-          <span>Sell</span>
+          <span>Sale</span>
         </a>
         <div id="collapseSell" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             {% if request.user.is_staff %}
-            <a class="collapse-item" href="{% url 'sell-create' %}">New Sell</a>
-            <a class="collapse-item" href="{% url 'sell-list' %}">Sells</a>
+            <a class="collapse-item" href="{% url 'sell-create' %}">New Sale</a>
+            <a class="collapse-item" href="{% url 'sell-list' %}">Sales</a>
             {% endif %}
           </div>
         </div>
@@ -121,7 +121,7 @@
         </a>
         <div id="collapseReports" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="{% url 'sell-report' %}">Sells</a>
+            <a class="collapse-item" href="{% url 'sell-report' %}">Sales</a>
           </div>
         </div>
       </li>

@@ -37,7 +37,7 @@ urlpatterns = [
     path('sells/invoice/<int:pk>', sell_invoice, name='sell-invoice'),
 
     path('charts/', ChartView.as_view(), name='charts'),
-    path('sells/chart/', SellReportChartView.as_view(), name='sell-chart'),
+    path('sells/chart/', SellReportView.as_view(), name='report'),
 ]
 
 admin.site.site_header = 'Inventory Admin Panel'
