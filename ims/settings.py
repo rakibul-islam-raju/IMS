@@ -79,8 +79,12 @@ WSGI_APPLICATION = 'ims.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'nexbpthc_tafsir-inventory',
+        'USER': 'nexbpthc_raju ',
+        'PASSWORD': 'raju7772588RAJU',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 
@@ -109,7 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'UTC+6'
 
 USE_I18N = True
 
@@ -154,12 +158,14 @@ AUTH_USER_MODEL = 'core.User'
 IMPORT_EXPORT_USE_TRANSACTIONS = True
 
 # email backend
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'rakibul-islam.nexbuzzy.com'
 EMAIL_USE_TLS = False
 EMAIL_PORT = 465 #This will be different based on your Host, for Namecheap I use this`
 EMAIL_HOST_USER = 'dev@rakibul-islam.nexbuzzy.com' # Ex: info@pure.com
 EMAIL_HOST_PASSWORD = 'raju7772588RAJU' # for the email you created through cPanel. The password for that
+
 # if DEBUG:
 #     EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
 #     EMAIL_HOST = 'rakibul-islam.nexbuzzy.com '
@@ -170,6 +176,6 @@ EMAIL_HOST_PASSWORD = 'raju7772588RAJU' # for the email you created through cPan
 # else:
 #     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
