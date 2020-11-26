@@ -14,7 +14,7 @@ SECRET_KEY = '2gi5vzt084l1#kb-704@(!pl!$lha3v37bwt*psx=k4@283%$e'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['inventory.nexbuzzy.com', 'www.inventory.nexbuzzy.com']
 
 
 # Application definition
@@ -79,12 +79,14 @@ WSGI_APPLICATION = 'ims.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'nexbpthc_tafsir-inventory',
-        'USER': 'nexbpthc_raju ',
-        'PASSWORD': 'raju7772588RAJU',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        # 'NAME': 'nexbpthc_tafsir-inventory',
+        # 'USER': 'nexbpthc_raju',
+        # 'PASSWORD': 'raju7772588RAJU',
+        # 'HOST': 'localhost',
+        # 'PORT': '5432',
     }
 }
 
@@ -113,7 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC+6'
+TIME_ZONE = 'Asia/Dhaka'
 
 USE_I18N = True
 
@@ -158,13 +160,13 @@ AUTH_USER_MODEL = 'core.User'
 IMPORT_EXPORT_USE_TRANSACTIONS = True
 
 # email backend
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'rakibul-islam.nexbuzzy.com'
-EMAIL_USE_TLS = False
-EMAIL_PORT = 465 #This will be different based on your Host, for Namecheap I use this`
-EMAIL_HOST_USER = 'dev@rakibul-islam.nexbuzzy.com' # Ex: info@pure.com
-EMAIL_HOST_PASSWORD = 'raju7772588RAJU' # for the email you created through cPanel. The password for that
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'mail.rakibul-islam.nexbuzzy.com'
+# EMAIL_USE_TLS = False
+# EMAIL_PORT = 26
+# EMAIL_HOST_USER = 'dev@rakibul-islam.nexbuzzy.com' # Ex: info@pure.com
+# EMAIL_HOST_PASSWORD = 'raju7772588RAJU' # for the email you created through cPanel. The password for that
 
 # if DEBUG:
 #     EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
