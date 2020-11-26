@@ -14,7 +14,7 @@ SECRET_KEY = '2gi5vzt084l1#kb-704@(!pl!$lha3v37bwt*psx=k4@283%$e'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['inventory.nexbuzzy.com', 'www.inventory.nexbuzzy.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'inventory.nexbuzzy.com', 'www.inventory.nexbuzzy.com']
 
 
 # Application definition

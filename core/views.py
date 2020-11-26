@@ -121,7 +121,7 @@ class SellProductReportView(LoginRequiredMixin,
             'total_sell': total_sell,
             'total_paid': total_paid,
             'total_due': total_due,
-            'title': 'Sell Report'
+            'title': 'Sale Report'
         }
         return render(self.request, 'sell_report.html', context)
     
@@ -278,7 +278,7 @@ class SellsListView(LoginRequiredMixin,
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = 'Sells'
+        context["title"] = 'Sales'
         return context
 
     def test_func(self):
@@ -324,7 +324,7 @@ class SellProductCreateView(LoginRequiredMixin,
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = 'New Sell'
+        context["title"] = 'New Sale'
         return context
 
     def get_success_url(self, **kwargs):
@@ -353,7 +353,7 @@ class SellProductByID(LoginRequiredMixin,
         })
         context = {
             'form': form,
-            'title': 'New Sell',
+            'title': 'New Sale',
             # 'sells': SellProduct.objects.all()
         }
         return render(self.request, 'sell-create.html', context)
@@ -452,7 +452,7 @@ class SellProductUpdateView(LoginRequiredMixin,
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = 'Edit Sell'
+        context["title"] = 'Edit Sale'
         # context["sells"] = SellProduct.objects.filter(is_active=True)
         return context
     
