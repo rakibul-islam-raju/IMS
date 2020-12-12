@@ -17,6 +17,7 @@ import json
 from datetime import date
 from django.template.loader import get_template
 from xhtml2pdf import pisa
+import datetime
 
 from .models import *
 from .forms import *
@@ -109,7 +110,15 @@ class SellProductReportView(LoginRequiredMixin,
                         View):
 
     def get(self, request, *args, **kwargs):
-        queryset = SellProduct.objects.filter(is_active=True)
+        last_six_days = datetime.date.today() - datetime.timedelta(days=6)
+        # check for filter
+        if self.request.GET:
+            # if filtered
+            queryset = SellProduct.objects.filter(is_active=True)
+        else:
+            # if not filtered
+            queryset = SellProduct.objects.filter(is_active=True, date_added__gte=last_six_days)
+        
         f = SellProductFilter(self.request.GET, queryset)
 
         total_sell = sum([item.get_total_amount for item in f.qs])
