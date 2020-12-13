@@ -10,6 +10,7 @@ from django.views.generic import (View,
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.db.models import Sum
@@ -107,32 +108,63 @@ def download_sells_csv(request):
 class SellProductReportView(LoginRequiredMixin,
                         UserPassesTestMixin,
                         SuccessMessageMixin,
-                        View):
+                        ListView):
+    model = SellProduct
+    template_name = 'sell_report.html'
+    context_object_name = 'filter'
+    # paginate_by = 1
 
-    def get(self, request, *args, **kwargs):
-        last_six_days = datetime.date.today() - datetime.timedelta(days=6)
+    def get_queryset(self):
+        last_six_days = datetime.date.today() - datetime.timedelta(days=30)
         # check for filter
         if self.request.GET:
             # if filtered
+            print('asdfasfd')
             queryset = SellProduct.objects.filter(is_active=True)
         else:
             # if not filtered
             queryset = SellProduct.objects.filter(is_active=True, date_added__gte=last_six_days)
+            print(queryset)
         
         f = SellProductFilter(self.request.GET, queryset)
+        # p = Paginator(f, 2)
+        return f
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["total_sell"] = sum([item.get_total_amount for item in self.get_queryset().qs])
+        context["total_paid"] = sum([item.paid_amount for item in self.get_queryset().qs])
+        context["total_due"] = sum([item.get_due_amount for item in self.get_queryset().qs])
+        return context
 
-        total_sell = sum([item.get_total_amount for item in f.qs])
-        total_paid = sum([item.paid_amount for item in f.qs])
-        total_due = sum([item.get_due_amount for item in f.qs])
 
-        context = {
-            'filter': f,
-            'total_sell': total_sell,
-            'total_paid': total_paid,
-            'total_due': total_due,
-            'title': 'Sale Report'
-        }
-        return render(self.request, 'sell_report.html', context)
+    # def get(self, request, *args, **kwargs):
+    #     last_six_days = datetime.date.today() - datetime.timedelta(days=6)
+    #     # check for filter
+    #     if self.request.GET:
+    #         # if filtered
+    #         queryset = SellProduct.objects.filter(is_active=True)
+    #     else:
+    #         # if not filtered
+    #         queryset = SellProduct.objects.filter(is_active=True, date_added__gte=last_six_days)
+        
+    #     f = SellProductFilter(self.request.GET, queryset)
+    #     p = Paginator(f, 2)
+
+
+    #     total_sell = sum([item.get_total_amount for item in f.qs])
+    #     total_paid = sum([item.paid_amount for item in f.qs])
+    #     total_due = sum([item.get_due_amount for item in f.qs])
+
+    #     context = {
+    #         'filter': f,
+    #         'paginator': p,
+    #         'total_sell': total_sell,
+    #         'total_paid': total_paid,
+    #         'total_due': total_due,
+    #         'title': 'Sale Report'
+    #     }
+    #     return render(self.request, 'sell_report.html', context)
     
     def test_func(self, *args, **kwargs):
         if self.request.user.is_staff:
