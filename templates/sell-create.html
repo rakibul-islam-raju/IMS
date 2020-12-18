@@ -18,6 +18,11 @@
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="form-group">
+                            {{ form.date_added|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
                             {{ form.product_name|as_crispy_field }}
                         </div>
                     </div>
@@ -29,21 +34,6 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             {{ form.sell_price|as_crispy_field }}
-                            {% comment %} {{ form.sell_price|as_crispy_field }} {% endcomment %}
-                            {% comment %} <div id="div_id_sell_price" class="form-group"> {% endcomment %}
-                                {% comment %} <label for="id_sell_price" class=" requiredField"> {{form.sell_price.label}}<span class="asteriskField">*</span></label> {% endcomment %}
-                                {% comment %} {{form.sell_price.label}} {% endcomment %}
-                                {% comment %} <div class="">
-                                    <input 
-                                        type="text" 
-                                        name="sell_price" 
-                                        value="{% if form.sell_price.value %}{{ form.sell_price.value }}{% endif %}" 
-                                        class="textinput textInput form-control" 
-                                        id="id_sell_price"
-                                        placeholder="Taka"
-                                    >
-                                </div> {% endcomment %}
-                            {% comment %} </div> {% endcomment %}
                         </div>
                     </div>
                     
@@ -57,7 +47,7 @@
                     </div>
                     <div class="col-lg-3">
                         <div class="form-group">
-                            {{ form.customer_phone|as_crispy_field }}
+                            {{ form.token_number|as_crispy_field }}
                         </div>
                     </div>
                     <div class="col-lg-3">
@@ -90,13 +80,6 @@
                     {% comment %} </div> {% endcomment %}
                 </div>
 
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            {{ form.description|as_crispy_field }}
-                        </div>
-                    </div>
-                </div>
                 <div class="buttons-right">
                     <button class="btn btn-primary mr-1" type="submit">Submit</button>
                     <a href="{% url 'sell-list' %}" class="btn btn-secondary">Cancel</a>

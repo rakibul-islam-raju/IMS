@@ -1,14 +1,15 @@
 ### Change 1.0
 ==============
-1. Make sell price optional
-2. Change customer phone number to token number
-3. No description field
-4. Display Datefield
+1. --done-- Make sell price optional
+2. --done-- Change customer phone number to token number
+3. --done-- No description field
+4. --done-- Display Datefield
 ====================
-5. Add pack in quantity
+5. Add sack in quantity
 6. Multiple sell form
-7. Add manual datefield
-8. Add supplier in Purchase
-9. Add chalan number field in Purchase
+7. --done-- Add manual datefield
+8. --done-- Add supplier in Purchase
+9. --done-- Add chalan number field in Purchase
+10. Add total purchase price
 ======================================
-10. Banglafont not working in CSV downloaded file.
+11. Banglafont not working in CSV downloaded file.

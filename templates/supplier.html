@@ -16,36 +16,26 @@
             <form action="" method="POST">
                 {% csrf_token %}
                 <div class="row">
-                    <div class="col-lg-3">
+                    <div class="col-lg-6">
                         <div class="form-group">
-                            {{ form.date_added|as_crispy_field }}
+                            {{ form.name|as_crispy_field }}
                         </div>
                     </div>
-                    <div class="col-lg-3">
+                    <div class="col-lg-6">
                         <div class="form-group">
-                            {{ form.supplier|as_crispy_field }}
+                            {{ form.phone|as_crispy_field }}
                         </div>
                     </div>
-                    <div class="col-lg-3">
+                    <div class="col-lg-6">
                         <div class="form-group">
-                            {{ form.product_name|as_crispy_field }}
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            {{ form.quantity|as_crispy_field }}
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            {{ form.price|as_crispy_field }}
+                            {{ form.description|as_crispy_field }}
                         </div>
                     </div>
                 </div>
                 
                 <div class="buttons-right">
                     <button class="btn btn-primary pull-right" type="submit">Submit</button>
-                    <a href="{% url 'purchase' %}" class="btn btn-secondary">Cancel</a>
+                    <a href="{% url 'supplier' %}" class="btn btn-secondary">Cancel</a>
                 </div>
             </form>
         </div>
@@ -53,7 +43,7 @@
 
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Purchase Products</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Suppliers</h6>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -61,26 +51,22 @@
                     <thead>
                     <tr>
                         <th>Sl No.</th>
-                        <th>Product</th>
-                        <th>Quantity (kg)</th>
-                        <th>Price</th>
-                        <th>Total</th>
-                        <th>Date (তারিখ)</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Description</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
 
                     <tbody>
-                        {% for purchase in purchases %}
+                        {% for supplier in suppliers %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ purchase.product_name }}</td>
-                            <td>{{ purchase.quantity }}</td>
-                            <td>{{ purchase.price }}</td>
-                            <td>{{ purchase.total_purchase_price }}</td>
-                            <td>{{ purchase.date_added }}</td>
+                            <td>{{ supplier.name }}</td>
+                            <td>{{ supplier.phone }}</td>
+                            <td>{{ supplier.description }}</td>
                             <td class="text-center">
-                                <a href="{{ purchase.get_update_url }}" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a>
+                                <a href="{{ supplier.get_update_url }}" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a>
                                 {% if request.user.is_superuser %}
                                     <a class="btn btn-sm btn-outline-danger" href="#" data-toggle="modal" data-target="#deleteModal">
                                         <i class="fa fa-trash-alt"></i>
@@ -101,7 +87,7 @@
                                                 <p class="text-danger"><span class="badge badge-danger mr-2">Warning: </span>This action will permanently delete your item.</p>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <form action="{{ purchase.get_delete_url}}" method="POST">
+                                                    <form action="{{ supplier.get_delete_url}}" method="POST">
                                                         {% csrf_token %}
                                                         <button type="submit" class="btn btn-danger">Delete</button>
                                                         <button class="btn btn-primary" type="button" data-dismiss="modal">Cancel</button>

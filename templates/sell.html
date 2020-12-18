@@ -16,6 +16,7 @@
                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <thead>
                             <tr>
+                                <th>Sl No.</th>
                                 <th>Product Name</th>
                                 <th>Product Quantity</th>
                                 <th>Sell Price</th>
@@ -23,7 +24,8 @@
                                 <th>Paid Amount</th>
                                 <th>Due Amount</th>
                                 <th>Customer Name</th>
-                                <th>Phone Number</th>
+                                <th>Token Number</th>
+                                <th>Date (তারিখ)</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -31,6 +33,7 @@
                             <tbody>
                                 {% for sell in sells %}
                                 <tr>
+                                    <td>{{ forloop.counter }}</td>
                                     <td>{{ sell.product_name }}</td>
                                     <td>{{ sell.quantity }}</td>
                                     <td>{{ sell.sell_price }}</td>
@@ -40,7 +43,8 @@
                                         {{ sell.get_due_amount }}
                                     </td>
                                     <td>{{ sell.customer_name }}</td>
-                                    <td>{{ sell.customer_phone }}</td>
+                                    <td>{{ sell.token_number }}</td>
+                                    <td>{{ sell.date_added }}</td>
                                     <td>
                                         <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
                                             <div class="btn-group" role="group" aria-label="First group">

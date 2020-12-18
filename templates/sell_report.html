@@ -24,9 +24,9 @@
                             <input class="form-control" type="text" name="customer_name" id="id_customer_name">
                         </div>
                         <div class="col-md-4">
-                            {% comment %} {{filter.form.customer_phone|as_crispy_field}} {% endcomment %}
-                            <label for="id_customer_phone">Customer Phone</label>
-                            <input class="form-control" type="text" name="customer_phone" id="id_customer_phone">
+                            {% comment %} {{filter.form.token_number|as_crispy_field}} {% endcomment %}
+                            <label for="id_token_number">Customer Phone</label>
+                            <input class="form-control" type="text" name="token_number" id="id_token_number">
                         </div>
                         <div class="col-md-4">
                             {% comment %} {{filter.form.product_name|as_crispy_field}} {% endcomment %}
@@ -78,7 +78,7 @@
                             <td>{{ obj.paid_amount }}</td>
                             <td>{{ obj.get_due_amount }}</td>
                             <td>{{ obj.customer_name }}</td>
-                            <td>{{ obj.customer_phone }}</td>
+                            <td>{{ obj.token_number }}</td>
                             <td>{{ obj.date_added }}</td>
                         </tr>
                         {% endfor %}

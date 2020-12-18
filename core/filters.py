@@ -8,7 +8,7 @@ class SellProductFilter(django_filters.FilterSet):
         
         fields = {
             'product_name': ['exact'],
-            'customer_name': ['exact'],
-            'customer_phone': ['exact'],
+            'customer_name': ['icontains'],
+            'token_number': ['exact'],
             'date_added': ['exact', 'gt', 'lt'],
         }

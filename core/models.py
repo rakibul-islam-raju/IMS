@@ -6,6 +6,8 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.validators import UnicodeUsernameValidator
 
+from datetime import datetime
+
 
 class Office(models.Model):
     name = models.CharField(max_length=30, unique=True)
@@ -55,13 +57,31 @@ class User(AbstractUser):
         return self.username
 
 
+class Supplier(models.Model):
+    name = models.CharField(max_length=100)
+    phone = models.CharField(max_length=100, blank=True, null=True)
+    description = models.TextField(max_length=254)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+    def get_update_url(self):
+        return reverse("supplier-update", kwargs={"pk": self.pk})
+    
+    def get_delete_url(self):
+        return reverse("supplier-delete", kwargs={"pk": self.pk})
+    
+
 class PurchaseProduct(models.Model):
-    product_name = models.CharField(max_length=30)
+    supplier = models.ForeignKey(Supplier, blank=True, null=True, on_delete=models.SET_NULL)
+    
+    product_name = models.CharField(max_length=30, default='গম')
     price = models.DecimalField(max_digits=8, decimal_places=2)
     quantity = models.PositiveIntegerField()
-    description = models.TextField(max_length=254, blank=True, null=True)
+    chalan_number = models.CharField(max_length=30, blank=True, null=True)
 
-    date_added = models.DateField(auto_now_add=True)
+    date_added = models.DateField(default=datetime.today)
     date_updated = models.DateField(auto_now_add=True)
     added_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     is_active = models.BooleanField(default=True)
@@ -78,12 +98,15 @@ class PurchaseProduct(models.Model):
     def get_delete_url(self):
         return reverse("purchase-delete", kwargs={"pk": self.pk})
 
+    @property
+    def total_purchase_price(self):
+        return (self.quantity * self.price)
+
 
 class Stock(models.Model):
     product_name = models.CharField(max_length=30)
     quantity = models.PositiveIntegerField()
-    sell_price = models.DecimalField(max_digits=8, decimal_places=2)
-    description = models.TextField(max_length=254, blank=True, null=True)
+    sell_price = models.DecimalField(blank=True, null=True, max_digits=8, decimal_places=2)
 
     date_added = models.DateField(auto_now_add=True)
     date_updated = models.DateField(auto_now_add=True)
@@ -109,11 +132,10 @@ class SellProduct(models.Model):
     quantity = models.PositiveIntegerField()
     sell_price = models.DecimalField(max_digits=8, decimal_places=2)
     customer_name = models.CharField(max_length=30)
-    customer_phone = models.CharField(max_length=11)
+    token_number = models.CharField(max_length=11)
     paid_amount = models.DecimalField(max_digits=8, decimal_places=2)
-    description = models.TextField(max_length=254, blank=True, null=True)
 
-    date_added = models.DateField(auto_now_add=True)
+    date_added = models.DateField(default=datetime.today)
     date_updated = models.DateField(auto_now_add=True)
     added_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     is_active = models.BooleanField(default=True)

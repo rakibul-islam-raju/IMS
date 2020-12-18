@@ -223,6 +223,53 @@ class EditUserManagent(LoginRequiredMixin,
         return False
 
 
+class SupplierCreateView(LoginRequiredMixin,
+                        UserPassesTestMixin,
+                        SuccessMessageMixin,
+                        View):
+    model = Supplier
+    template_name = 'supplier.html'
+
+    def get(self, *args, **kwargs):
+        queryset = Supplier.objects.filter(is_active=True)
+        page = self.request.GET.get('page', 1)
+
+        paginator = Paginator(queryset, 20)
+
+        try:
+            suppliers = paginator.page(page)
+        except PageNotAnInteger:
+            suppliers = paginator.page(1)
+        except EmptyPage:
+            suppliers = paginator.page(paginator.num_pages)
+
+        context = {
+            'suppliers': suppliers,
+            'page_obj': suppliers,
+            'title': 'New Supplier',
+            'form': SupplierCreateForm()
+        }
+        
+        return render(self.request, 'supplier.html', context)
+
+    def post(self, *args, **kwargs):
+        form = SupplierCreateForm(self.request.POST or None)
+        
+        if form.is_valid():
+            form.save()
+
+            messages.success(self.request, 'Supplier created successfully')        
+            return redirect('supplier')
+
+        messages.warning(self.request, 'Invalid form')        
+        return redirect('supplier')
+
+    def test_func(self):
+        if self.request.user.is_staff:
+            return True
+        return False
+
+
 class PurchaseProductCreateView(LoginRequiredMixin,
                                 UserPassesTestMixin,
                                 SuccessMessageMixin,
@@ -445,6 +492,47 @@ class SellProductByID(LoginRequiredMixin,
 
 # ============ update view ===========
 
+class SupplierUpdateView(LoginRequiredMixin,
+                        UserPassesTestMixin,
+                        SuccessMessageMixin,
+                        UpdateView):
+    model = Supplier
+    form_class = SupplierCreateForm
+    template_name = 'supplier.html'
+    success_url = 'supplier'
+    success_message = "%(name)s was updated successfully"
+
+    def get(self, *args, **kwargs):
+        queryset = Supplier.objects.filter(is_active=True)
+        page = self.request.GET.get('page', 1)
+
+        paginator = Paginator(queryset, 20)
+
+        try:
+            suppliers = paginator.page(page)
+        except PageNotAnInteger:
+            suppliers = paginator.page(1)
+        except EmptyPage:
+            suppliers = paginator.page(paginator.num_pages)
+
+        context = {
+            'suppliers': suppliers,
+            'page_obj': suppliers,
+            'title': 'New Supplier',
+            'form': SupplierCreateForm(instance=self.get_object())
+        }
+        
+        return render(self.request, 'supplier.html', context)
+    
+    def get_success_url(self, **kwargs):
+        return reverse(self.success_url)
+    
+    def test_func(self):
+        if self.request.user.is_staff:
+            return True
+        return False
+
+
 class PurchaseProductUpdateView(LoginRequiredMixin,
                                 UserPassesTestMixin,
                                 SuccessMessageMixin,
@@ -521,6 +609,24 @@ class SellProductUpdateView(LoginRequiredMixin,
 
 
 # ========== delete views ==============
+
+class SupplierDeleteView(LoginRequiredMixin,
+                                UserPassesTestMixin,
+                                SuccessMessageMixin,
+                                DeleteView):
+    model = Supplier
+    template_name = 'supplier.html'
+    success_url = 'supplier'
+    success_message = "%(name)s was deleted successfully"
+
+    def get_success_url(self, **kwargs):
+        return reverse(self.success_url)
+    
+    def test_func(self):
+        if self.request.user.is_superuser:
+            return True
+        return False
+
 
 class PurchaseProductDeleteView(LoginRequiredMixin,
                                 UserPassesTestMixin,

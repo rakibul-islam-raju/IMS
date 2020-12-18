@@ -80,6 +80,7 @@
                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <thead>
                             <tr>
+                                <th>Date (তারিখ)</th>
                                 <th>Product (পণ্য)</th>
                                 <th>Qunatity (পরিমাণ)</th>
                                 <th>Price (বিক্রয় মূল্য)</th>
@@ -91,6 +92,7 @@
                             <tbody>
                                 {% for product in stocks %}
                                 <tr {% if product.quantity <= 0 %}class="text-danger"{% endif %}>
+                                    <td>{{ product.date_updated }}</td>
                                     <td>{{ product.product_name }}</td>
                                     <td>{{ product.quantity }}</td>
                                     <td>{{ product.sell_price }}</td>

@@ -54,10 +54,11 @@
                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <thead>
                             <tr>
-                                <th>Products (পণ্য)</th>
+                                <th>Sl No.</th>
+                                <th>Product (পণ্য)</th>
                                 <th>Quantity (পরিমাণ)</th>
                                 <th>Sell Price (বিক্রয় মূল্য)</th>
-                                <th>Description (বর্ণনা)</th>
+                                <th>Date (তারিখ)</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -65,10 +66,11 @@
                             <tbody>
                                 {% for stock in stocks %}
                                 <tr {% if stock.quantity <= 0 %}class="text-danger"{% endif %}>
+                                    <td>{{ forloop.counter }}</td>
                                     <td>{{ stock.product_name }}</td>
                                     <td>{{ stock.quantity }}</td>
                                     <td>{{ stock.sell_price }}</td>
-                                    <td>{{ stock.description }}</td>
+                                    <td>{{ stock.date_updated }}</td>
                                     <td>
                                         <a href="{{ stock.get_update_url }}" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a>
 

@@ -34,25 +34,50 @@ class UserPermissionForm(forms.ModelForm):
                 'is_staff',]
 
 
+class SupplierCreateForm(forms.ModelForm):
+
+    class Meta:
+        model = Supplier
+        fields = [
+            'name',
+            'phone',
+            'description'
+        ]
+        labels = {
+            'name': 'Supplier (সরবরাহকারী)',
+            'phone': 'Phone (নাম্বার)',
+            'description': 'Description (বর্ণনা)',
+        }
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'Name'}),
+            'phone': forms.TextInput(attrs={'placeholder': 'Number'}),
+            'description': forms.Textarea(attrs={'rows': '2'}),
+        }
+
 class PurchaseCreateForm(forms.ModelForm):
 
     class Meta:
         model = PurchaseProduct
-        fields = ['product_name',
+        fields = [
+                'supplier',
+                'product_name',
                 'price',
                 'quantity',
-                'description']
+                'date_added'
+            ]
         labels = {
+            'supplier': 'Supplier (সরবরাহকারী)',
             'product_name': 'Product (পণ্য)',
             'price': 'Price (মূল্য)',
             'quantity': 'Quantity (পরিমাণ)',
-            'description': 'Description (বর্ণনা)'
+            'date_added': 'Date (তারিখ)'
         }
         widgets = {
+            # 'supplier': forms.TextInput(attrs={'placeholder': 'Name'}),
             'product_name': forms.TextInput(attrs={'placeholder': 'Name'}),
             'price': forms.TextInput(attrs={'placeholder': 'Taka'}),
             'quantity': forms.TextInput(attrs={'placeholder': 'kg'}),
-            'description': forms.Textarea(attrs={'rows': '2'}),
+            'date_added': forms.DateInput(attrs={'placeholder': 'Date'}),
         }    
 
 
@@ -63,18 +88,16 @@ class StockCreateForm(forms.ModelForm):
         fields = ['product_name',
                 'sell_price',
                 'quantity',
-                'description']
+                ]
         widgets = {
             'product_name': forms.TextInput(attrs={'placeholder': 'Name'}),
             'sell_price': forms.TextInput(attrs={'placeholder': 'Taka'}),
             'quantity': forms.TextInput(attrs={'placeholder': 'kg'}),
-            'description': forms.Textarea(attrs={'rows': '2'}),
         }
         labels = {
                 'product_name': 'Product (পণ্য)',
                 'quantity': 'Quantity (পরিমাণ)',
                 'sell_price': 'Sell Price (বিক্রয় মূল্য)',
-                'description': 'Description (বর্ণনা)',
         } 
 
 
@@ -82,28 +105,30 @@ class SellProductCreateForm(forms.ModelForm):
 
     class Meta:
         model = SellProduct
-        fields = ['product_name',
+        fields = [
+                'product_name',
                 'quantity',
                 'sell_price',
                 'customer_name',
-                'customer_phone',
+                'token_number',
                 'paid_amount',
-                'description']
+                'date_added',
+            ]
         labels = {
                 'product_name': 'Product (পণ্য)',
                 'quantity': 'Quantity (পরিমাণ)',
                 'sell_price': 'Sell Price (বিক্রয় মূল্য)',
                 'customer_name': 'Customer Name (ক্রেতার নাম)',
-                'customer_phone': 'Customer Phone (ক্রেতার নাম্বার)',
+                'token_number': 'Token Number (টোকেন নাম্বার)',
                 'paid_amount': 'Paid Amount (পরিশোধিত টাকা)',
-                'description': 'Description (বর্ণনা)',
+                'date_added': 'Date (তারিখ)',
         }
         widgets = {
             'sell_price': forms.TextInput(attrs={'placeholder': 'Taka'}),
             'paid_amount': forms.TextInput(attrs={'placeholder': 'Taka'}),
             'customer_name': forms.TextInput(attrs={'placeholder': 'Name'}),
-            'customer_phone': forms.TextInput(attrs={'placeholder': 'Phone'}),
+            'token_number': forms.TextInput(attrs={'placeholder': 'Token'}),
             'quantity': forms.TextInput(attrs={'placeholder': 'kg'}),
             'paid_amount': forms.TextInput(attrs={'placeholder': 'Taka'}),
-            'description': forms.Textarea(attrs={'rows': '2'}),
+            'date_added': forms.DateInput(attrs={'placeholder': 'Date'}),
         }
