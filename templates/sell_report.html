@@ -19,13 +19,19 @@
                 <form action="" method="GET">
                     <div class="row">
                         <div class="col-md-4">
-                            {{filter.form.customer_name|as_crispy_field}}
+                            {% comment %} {{filter.form.customer_name|as_crispy_field}} {% endcomment %}
+                            <label for="id_customer_name">Customer Name</label>
+                            <input class="form-control" type="text" name="customer_name" id="id_customer_name">
                         </div>
                         <div class="col-md-4">
-                            {{filter.form.customer_phone|as_crispy_field}}
+                            {% comment %} {{filter.form.customer_phone|as_crispy_field}} {% endcomment %}
+                            <label for="id_customer_phone">Customer Phone</label>
+                            <input class="form-control" type="text" name="customer_phone" id="id_customer_phone">
                         </div>
                         <div class="col-md-4">
-                            {{filter.form.product_name|as_crispy_field}}
+                            {% comment %} {{filter.form.product_name|as_crispy_field}} {% endcomment %}
+                            <label for="id_product_name">Product Name</label>
+                            <input class="form-control" type="text" name="product_name" id="id_product_name">
                         </div>
                         <div class="col-md-4">
                             <label for="id_date_added">Date</label>
@@ -63,7 +69,7 @@
                     </thead>
 
                     <tbody>
-                        {% for obj in filter.qs %}
+                        {% for obj in filter %}
                         <tr>
                             <td>{{ obj.product_name }}</td>
                             <td>{{ obj.quantity }}</td>
@@ -89,6 +95,9 @@
                     </thead>
                     
                 </table>
+
+                {% include './includes/pagination.html' %}
+                    
             </div>
         </div>
     </div>

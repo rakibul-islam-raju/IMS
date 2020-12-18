@@ -1,4 +1,13 @@
 // Call the dataTables jQuery plugin
+
 $(document).ready(function() {
-  $('#dataTable').DataTable();
+  $('#dataTable').DataTable({
+    "lengthChange": false,
+    "pageLength": 20,
+    "paging": false,
+    "info": false,
+    "ordering": false,
+  });
+
+  // $('#productDataTable').DataTable();
 });
