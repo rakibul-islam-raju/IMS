@@ -66,6 +66,9 @@ class PurchaseProduct(models.Model):
     added_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     is_active = models.BooleanField(default=True)
 
+    class Meta:
+        ordering = ['-id']
+
     def __str__(self):
         return self.product_name
 
@@ -86,6 +89,9 @@ class Stock(models.Model):
     date_updated = models.DateField(auto_now_add=True)
     added_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['-id']
 
     def __str__(self):
         return self.product_name
@@ -111,6 +117,9 @@ class SellProduct(models.Model):
     date_updated = models.DateField(auto_now_add=True)
     added_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['-id']
 
     def __str__(self):
         if self.product_name:

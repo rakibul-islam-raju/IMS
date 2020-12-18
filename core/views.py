@@ -8,15 +8,18 @@ from django.views.generic import (View,
                                 UpdateView,
                                 DeleteView)
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.db.models import Sum
+
 import json
 from datetime import date
 from django.template.loader import get_template
 from xhtml2pdf import pisa
+import datetime
 
 from .models import *
 from .forms import *
@@ -106,24 +109,33 @@ def download_sells_csv(request):
 class SellProductReportView(LoginRequiredMixin,
                         UserPassesTestMixin,
                         SuccessMessageMixin,
-                        View):
+                        ListView):
+    model = SellProduct
+    template_name = 'sell_report.html'
+    context_object_name = 'filter'
+    paginate_by = 20
 
-    def get(self, request, *args, **kwargs):
-        queryset = SellProduct.objects.filter(is_active=True)
-        f = SellProductFilter(self.request.GET, queryset)
+    def get_queryset(self):
+        last_six_days = datetime.date.today() - datetime.timedelta(days=30)
+        # check for filter
+        if self.request.GET:
+            # if filtered
+            queryset = SellProduct.objects.filter(is_active=True)
+        else:
+            # if not filtered
+            queryset = SellProduct.objects.filter(is_active=True, date_added__gte=last_six_days)
+        
+        query_filter = SellProductFilter(self.request.GET, queryset)
 
-        total_sell = sum([item.get_total_amount for item in f.qs])
-        total_paid = sum([item.paid_amount for item in f.qs])
-        total_due = sum([item.get_due_amount for item in f.qs])
-
-        context = {
-            'filter': f,
-            'total_sell': total_sell,
-            'total_paid': total_paid,
-            'total_due': total_due,
-            'title': 'Sale Report'
-        }
-        return render(self.request, 'sell_report.html', context)
+        return query_filter.qs
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["total_sell"] = sum([item.get_total_amount for item in self.get_queryset()])
+        context["total_paid"] = sum([item.paid_amount for item in self.get_queryset()])
+        context["total_due"] = sum([item.get_due_amount for item in self.get_queryset()])
+        context["title"] = 'Sale Report'
+        return context
     
     def test_func(self, *args, **kwargs):
         if self.request.user.is_staff:
@@ -153,14 +165,18 @@ class SellReportView(LoginRequiredMixin,
 
 
 class HomeView(LoginRequiredMixin,
-            TemplateView):
+            ListView):
     template_name = 'index.html'
+    model = Stock
+    queryset = Stock.objects.filter(is_active=True)
+    context_object_name = 'stocks'
+    paginate_by = 20
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["stocks"] = Stock.objects.filter(is_active=True)
-        context["sells"] = SellProduct.objects.filter(is_active=True)
-        context["purchases"] = PurchaseProduct.objects.filter(is_active=True)
+        context["total_stocks"] = Stock.objects.filter(is_active=True).count()
+        context["total_sells"] = SellProduct.objects.filter(is_active=True).count()
+        context["total_purchases"] = PurchaseProduct.objects.filter(is_active=True).count()
         return context
 
 
@@ -210,26 +226,45 @@ class EditUserManagent(LoginRequiredMixin,
 class PurchaseProductCreateView(LoginRequiredMixin,
                                 UserPassesTestMixin,
                                 SuccessMessageMixin,
-                                CreateView):
+                                View):
     model = PurchaseProduct
-    form_class = PurchaseCreateForm
     template_name = 'purchase.html'
-    success_url = 'purchase'
-    success_message = "%(product_name)s was created successfully"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = 'New Purchase'
-        context["purchases"] = PurchaseProduct.objects.filter(is_active=True)
-        return context
+    def get(self, *args, **kwargs):
+        queryset = PurchaseProduct.objects.filter(is_active=True)
+        page = self.request.GET.get('page', 1)
 
-    def get_success_url(self, **kwargs):
-        return reverse(self.success_url)
+        paginator = Paginator(queryset, 20)
 
-    def form_valid(self, form):
-        form.instance.added_by = self.request.user
-        form.instance.save()
-        return super(PurchaseProductCreateView, self).form_valid(form)
+        try:
+            purchases = paginator.page(page)
+        except PageNotAnInteger:
+            purchases = paginator.page(1)
+        except EmptyPage:
+            purchases = paginator.page(paginator.num_pages)
+
+        context = {
+            'purchases': purchases,
+            'page_obj': purchases,
+            'title': 'New Purchase',
+            'form': PurchaseCreateForm()
+        }
+        
+        return render(self.request, 'purchase.html', context)
+
+    def post(self, *args, **kwargs):
+        form = PurchaseCreateForm(self.request.POST or None)
+        
+        if form.is_valid():
+            new_purchase = form.save(commit=False)
+            new_purchase.added_by = self.request.user
+            new_purchase.save()
+
+            messages.success(self.request, f'{new_purchase.product_name} created successfully')        
+            return redirect('purchase')
+
+        messages.warning(self.request, 'Invalid form')        
+        return redirect('purchase')
 
     def test_func(self):
         if self.request.user.is_staff:
@@ -240,26 +275,45 @@ class PurchaseProductCreateView(LoginRequiredMixin,
 class StockCreateView(LoginRequiredMixin,
                     UserPassesTestMixin,
                     SuccessMessageMixin,
-                    CreateView):
+                    View):
     model = Stock
-    form_class = StockCreateForm
     template_name = 'stock.html'
-    success_url = 'stock'
-    success_message = "%(product_name)s was stocked successfully"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = 'New Stock'
-        context["stocks"] = Stock.objects.filter(is_active=True)
-        return context
+    def get(self, *args, **kwargs):
+        queryset = Stock.objects.filter(is_active=True)
+        page = self.request.GET.get('page', 1)
 
-    def get_success_url(self, **kwargs):
-        return reverse(self.success_url)
+        paginator = Paginator(queryset, 20)
 
-    def form_valid(self, form):
-        form.instance.added_by = self.request.user
-        form.instance.save()
-        return super(StockCreateView, self).form_valid(form)
+        try:
+            stocks = paginator.page(page)
+        except PageNotAnInteger:
+            stocks = paginator.page(1)
+        except EmptyPage:
+            stocks = paginator.page(paginator.num_pages)
+
+        context = {
+            'stocks': stocks,
+            'page_obj': stocks,
+            'title': 'New Stock',
+            'form': StockCreateForm()
+        }
+        
+        return render(self.request, 'stock.html', context)
+
+    def post(self, *args, **kwargs):
+        form = StockCreateForm(self.request.POST or None)
+        
+        if form.is_valid():
+            new_stock = form.save(commit=False)
+            new_stock.added_by = self.request.user
+            new_stock.save()
+
+            messages.success(self.request, f'{new_stock.product_name} created successfully')        
+            return redirect('stock')
+
+        messages.warning(self.request, 'Invalid form')        
+        return redirect('stock')
 
     def test_func(self):
         if self.request.user.is_staff:
@@ -275,6 +329,7 @@ class SellsListView(LoginRequiredMixin,
     # queryset = SellProduct.objects.filter(is_staff=True)
     context_object_name = 'sells'
     template_name = 'sell.html'
+    paginate_by = 20
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
