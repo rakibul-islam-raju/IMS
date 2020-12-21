@@ -63,6 +63,7 @@ class PurchaseCreateForm(forms.ModelForm):
                 'product_name',
                 'price',
                 'quantity',
+                'chalan_number',
                 'date_added'
             ]
         labels = {
@@ -70,6 +71,7 @@ class PurchaseCreateForm(forms.ModelForm):
             'product_name': 'Product (পণ্য)',
             'price': 'Price (মূল্য)',
             'quantity': 'Quantity (পরিমাণ)',
+            'chalan_number': 'Chalan (চালান)',
             'date_added': 'Date (তারিখ)'
         }
         widgets = {

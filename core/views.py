@@ -568,12 +568,29 @@ class PurchaseProductUpdateView(LoginRequiredMixin,
     success_url = 'purchase'
     success_message = "%(product_name)s was updated successfully"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = 'Edit Purchase'
-        context["purchases"] = PurchaseProduct.objects.filter(is_active=True)
-        return context
-    
+    def get(self, *args, **kwargs):
+        queryset = PurchaseProduct.objects.filter(is_active=True)
+        page = self.request.GET.get('page', 1)
+
+        paginator = Paginator(queryset, 20)
+
+        try:
+            purchases = paginator.page(page)
+        except PageNotAnInteger:
+            purchases = paginator.page(1)
+        except EmptyPage:
+            purchases = paginator.page(paginator.num_pages)
+
+        context = {
+            'purchases': purchases,
+            'page_obj': purchases,
+            'title': 'New Purchase',
+            'form': PurchaseCreateForm(instance=self.get_object()),
+            'supplier_form': SupplierCreateForm()
+        }
+
+        return render(self.request, 'purchase.html', context)
+
     def get_success_url(self, **kwargs):
         return reverse(self.success_url)
     
@@ -593,11 +610,27 @@ class StockUpdateView(LoginRequiredMixin,
     success_url = 'stock'
     success_message = "%(product_name)s was updated successfully"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = 'Edit Stock'
-        context["stocks"] = Stock.objects.filter(is_active=True)
-        return context
+    def get(self, *args, **kwargs):
+        queryset = Stock.objects.filter(is_active=True)
+        page = self.request.GET.get('page', 1)
+
+        paginator = Paginator(queryset, 20)
+
+        try:
+            stocks = paginator.page(page)
+        except PageNotAnInteger:
+            stocks = paginator.page(1)
+        except EmptyPage:
+            stocks = paginator.page(paginator.num_pages)
+
+        context = {
+            'stocks': stocks,
+            'page_obj': stocks,
+            'title': 'New Stock',
+            'form': StockCreateForm(instance=self.get_object())
+        }
+        
+        return render(self.request, 'stock.html', context)
     
     def get_success_url(self, **kwargs):
         return reverse(self.success_url)

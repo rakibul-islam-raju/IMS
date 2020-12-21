@@ -48,14 +48,19 @@
             <form autocomplete="off" action="" method="POST" @change="calculateTotalPrice()">
                 {% csrf_token %}
                 <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-lg-4">
                         <div class="form-group">
                             {{ form.date_added|as_crispy_field }}
                         </div>
                     </div>
-                    <div class="col-lg-6">
+                    <div class="col-lg-4">
                         <div class="form-group">
                             {{ form.supplier|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            {{ form.chalan_number|as_crispy_field }}
                         </div>
                     </div>
                     <div class="col-lg-4">
@@ -119,6 +124,7 @@
                         <th>Price</th>
                         <th>Total</th>
                         <th>Supplier</th>
+                        <th>Chalan</th>
                         <th>Date</th>
                         <th>Actions</th>
                     </tr>
@@ -133,6 +139,7 @@
                             <td>{{ purchase.price }}</td>
                             <td>{{ purchase.total_purchase_price }}</td>
                             <td>{{ purchase.supplier }}</td>
+                            <td>{{ purchase.chalan_number }}</td>
                             <td>{{ purchase.date_added }}</td>
                             <td class="text-center">
                                 <a href="{{ purchase.get_update_url }}" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a>
