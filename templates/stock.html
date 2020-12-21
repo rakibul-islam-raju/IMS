@@ -16,7 +16,7 @@
             <form action="" method="POST">
                 {% csrf_token %}
                 <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-lg-5">
                         <div class="form-group">
                             {{ form.product_name|as_crispy_field }}
                         </div>
@@ -28,12 +28,7 @@
                     </div>
                     <div class="col-lg-3">
                         <div class="form-group">
-                            {{ form.sell_price|as_crispy_field }}
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            {{ form.description|as_crispy_field }}
+                            {% comment %} {{ form.sell_price|as_crispy_field }} {% endcomment %}
                         </div>
                     </div>
                 </div>
@@ -57,7 +52,7 @@
                                 <th>Sl No.</th>
                                 <th>Product (পণ্য)</th>
                                 <th>Quantity (পরিমাণ)</th>
-                                <th>Sell Price (বিক্রয় মূল্য)</th>
+                                {% comment %} <th>Sell Price (বিক্রয় মূল্য)</th> {% endcomment %}
                                 <th>Date (তারিখ)</th>
                                 <th>Actions</th>
                             </tr>
@@ -69,8 +64,8 @@
                                     <td>{{ forloop.counter }}</td>
                                     <td>{{ stock.product_name }}</td>
                                     <td>{{ stock.quantity }}</td>
-                                    <td>{{ stock.sell_price }}</td>
-                                    <td>{{ stock.date_updated }}</td>
+                                    {% comment %} <td>{{ stock.sell_price }}</td> {% endcomment %}
+                                    <td>{{ stock.date_updated|date }}</td>
                                     <td>
                                         <a href="{{ stock.get_update_url }}" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a>
 

@@ -80,11 +80,11 @@
                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <thead>
                             <tr>
-                                <th>Date (তারিখ)</th>
+                                <th>Sl No.</th>
                                 <th>Product (পণ্য)</th>
                                 <th>Qunatity (পরিমাণ)</th>
-                                <th>Price (বিক্রয় মূল্য)</th>
-                                <th>Description (বর্ণনা)</th>
+                                {% comment %} <th>Price (বিক্রয় মূল্য)</th> {% endcomment %}
+                                <th>Date (তারিখ)</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -92,11 +92,11 @@
                             <tbody>
                                 {% for product in stocks %}
                                 <tr {% if product.quantity <= 0 %}class="text-danger"{% endif %}>
-                                    <td>{{ product.date_updated }}</td>
+                                    <td>{{ forloop.counter }}</td>
                                     <td>{{ product.product_name }}</td>
                                     <td>{{ product.quantity }}</td>
-                                    <td>{{ product.sell_price }}</td>
-                                    <td>{{ product.description }}</td>
+                                    {% comment %} <td>{{ product.sell_price }}</td> {% endcomment %}
+                                    <td>{{ product.date_updated|date }}</td>
                                     <td class="text-center">
                                         {% if product.quantity > 0 %}
                                         <a href="{% url 'sell-product-by-id' product.pk %}" class="btn btn-sm btn-primary">Sell</a>

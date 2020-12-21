@@ -12,7 +12,8 @@
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">{{ title|title }}</h6>
-            <a href="{% url 'sells-csv' %}" class="btn btn-sm btn-primary buttons-right d-inline">Download CSV <i class="fa fa-cloud-download-alt"></i></a>
+            {% comment %} {% url 'sells-csv' %} {% endcomment %}
+            <button id="downloadPdf" onclick="downloadPDF()" class="btn btn-sm btn-primary buttons-right d-inline">Download CSV <i class="fa fa-cloud-download-alt"></i></button>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -25,11 +26,11 @@
                         </div>
                         <div class="col-md-4">
                             {% comment %} {{filter.form.token_number|as_crispy_field}} {% endcomment %}
-                            <label for="id_token_number">Customer Phone</label>
+                            <label for="id_token_number">Token</label>
                             <input class="form-control" type="text" name="token_number" id="id_token_number">
                         </div>
                         <div class="col-md-4">
-                            {% comment %} {{filter.form.product_name|as_crispy_field}} {% endcomment %}
+                            {% comment %} {{sellproductFilter.form.product_name|as_crispy_field}} {% endcomment %}
                             <label for="id_product_name">Product Name</label>
                             <input class="form-control" type="text" name="product_name" id="id_product_name">
                         </div>
@@ -38,12 +39,12 @@
                             <input class="form-control" type="date" name="date_added" id="id_date_added">
                         </div>
                         <div class="col-md-4">
-                            <label for="id_date_added__gt">Start Date</label>
-                            <input class="form-control" type="date" name="date_added__gt" id="id_date_added__gt">
+                            <label for="id_start_date">Start Date</label>
+                            <input class="form-control" type="date" name="start_date" id="id_start_date">
                         </div>
                         <div class="col-md-4">
-                            <label for="id_date_added__lt">End Date</label>
-                            <input class="form-control" type="date" name="date_added__lt" id="id_date_added__lt">
+                            <label for="id_end_date">End Date</label>
+                            <input class="form-control" type="date" name="end_date" id="id_end_date">
                         </div>
                     </div>
                     <div class="buttons-right">
@@ -53,25 +54,27 @@
                 </form>
                 <br>
                 <br>
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered" id="reportDataTable" width="100%" cellspacing="0" style="font-size: 14px;">
                     <thead>
                         <tr>
                             <th>Product</th>
+                            <th>Sack</th>
                             <th>Quantity</th>
                             <th>Price</th>
                             <th>Total</th>
                             <th>Paid</th>
                             <th>Due</th>
                             <th>Customer</th>
-                            <th>Phone</th>
+                            <th>Token</th>
                             <th>Date</th>
                         </tr>
                     </thead>
 
-                    <tbody>
+                    <tbody id="bold" style="color: #000">
                         {% for obj in filter %}
                         <tr>
                             <td>{{ obj.product_name }}</td>
+                            <td>{{ obj.sack }} kg</td>
                             <td>{{ obj.quantity }}</td>
                             <td>{{ obj.sell_price }}</td>
                             <td>{{ obj.get_total_amount }}</td>
@@ -79,25 +82,23 @@
                             <td>{{ obj.get_due_amount }}</td>
                             <td>{{ obj.customer_name }}</td>
                             <td>{{ obj.token_number }}</td>
-                            <td>{{ obj.date_added }}</td>
+                            <td>{{ obj.date_added|date }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
 
-                    <thead>
+                    <thead id="bold" style="color: #000">
                         <tr>
                             <th colspan="3" class="text-right">Grand Total =</th>
                             <th>{{ total_sell }}</th>
                             <th>{{ total_paid }}</th>
                             <th>{{ total_due }}</th>
-                            <th colspan="3"></th>
+                            <th colspan="4"></th>
                         </tr>
                     </thead>
                     
                 </table>
 
-                {% include './includes/pagination.html' %}
-                    
             </div>
         </div>
     </div>
@@ -106,4 +107,29 @@
 {% endblock body %}
 
 {% block script %}
+
+<script type="text/javascript">
+
+function downloadPDF(){
+    //document.getElementById('bold').style.color = "#000";
+    //document.getElementById('bold').style.fontWeight = "bold";
+    var element = document.getElementById('reportDataTable');
+    var opt = {
+        margin: [15, 5, 15, 5],
+        filename: 'report.pdf',
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: {
+            dpi: 192,
+            scale:4,
+            letterRendering: true,
+            useCORS: true
+        },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+    };
+
+    html2pdf(element, opt).save();
+    }
+
+</script>
+
 {% endblock script %}

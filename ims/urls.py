@@ -19,6 +19,7 @@ urlpatterns = [
     path('users/', UserManagement.as_view(), name='user'),
     path('user/<username>/', EditUserManagent.as_view(), name='user-edit'),
 
+    path('purchase/suppliers/', SupplierModalCreate.as_view(), name='supplier-modal'),
     path('suppliers/', SupplierCreateView.as_view(), name='supplier'),
     path('suppliers/<int:pk>', SupplierUpdateView.as_view(), name='supplier-update'),
     path('suppliers/delete/<int:pk>', SupplierDeleteView.as_view(), name='supplier-delete'),

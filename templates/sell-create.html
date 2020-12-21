@@ -13,46 +13,65 @@
             <h6 class="m-0 font-weight-bold text-primary">{{ title|title }}</h6>
         </div>
         <div class="card-body">
-            <form action="" method="POST" @change="calculateDue">
+            <form action="" method="POST" @change="calculateDue" autocomplete="off">
                 {% csrf_token %}
                 <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-lg-5">
                         <div class="form-group">
                             {{ form.date_added|as_crispy_field }}
                         </div>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            {{ form.product_name|as_crispy_field }}
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            {{ form.quantity|as_crispy_field }}
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="form-group">
-                            {{ form.sell_price|as_crispy_field }}
-                        </div>
-                    </div>
-                    
-                </div>
-
-                <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-lg-5">
                         <div class="form-group">
                             {{ form.customer_name|as_crispy_field }}
                         </div>
                     </div>
-                    <div class="col-lg-3">
+                    <div class="col-lg-2">
                         <div class="form-group">
                             {{ form.token_number|as_crispy_field }}
                         </div>
                     </div>
                     <div class="col-lg-3">
                         <div class="form-group">
-                            {% comment %} {{ form.paid_amount|as_crispy_field }} {% endcomment %}
+                            {{ form.product_name|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            {{ form.sack|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            <label for="id_quantity">{{ form.quantity.label }}*</label>
+                            <input 
+                                type="number"
+                                @keyup="calculateTotalPrice()"
+                                class="textinput textInput form-control" 
+                                id="id_quantity"
+                                name="quantity"
+                                value="{% if form.quantity.value %}{{ form.quantity.value }}{% endif %}"
+                            >
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            <label for="id_sell_price">{{ form.sell_price.label }}*</label>
+                            <input 
+                                type="text"
+                                class="extinput textInput form-control" 
+                                id="id_sell_price"
+                                name="sell_price"
+                                placeholder="Tk"
+                                @keyup="calculateTotalPrice()"
+                                value="{% if form.sell_price.value %}{{ form.sell_price.value }}{% endif %}"
+                            >
+                            <small v-if="totalAmount">Total: [[ totalAmount ]]</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3">
+                        <div class="form-group">
                             <div id="div_id_paid_amount" class="form-group">
                                 <label for="id_paid_amount" class=" requiredField"> {{form.paid_amount.label}}<span class="asteriskField">*</span></label>
                                 <div class="">
@@ -64,20 +83,13 @@
                                         id="id_paid_amount"
                                         placeholder="Taka"
                                         value="{% if form.paid_amount.value %}{{ form.paid_amount.value }}{% endif %}"
-                                        required="" 
+                                        required=""
                                     >
+                                    <small v-if="dueAmount" class="text-danger">Due: [[dueAmount]]</small>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="buttons-right" v-if="dueField">
-                    {% comment %} <div class="col-lg-3"> {% endcomment %}
-                        <div class="form-group">
-                        <label for="dueAmount">Due amount (বাকির পরিমাণ)</label>
-                            <input v-model="dueAmount" type="text" class="form-control" readonly id="dueAmount">
-                        </div>
-                    {% comment %} </div> {% endcomment %}
                 </div>
 
                 <div class="buttons-right">
@@ -102,22 +114,30 @@ const createSell = {
     data(){
         return{
             dueAmount: '',
-            dueField: false
+            totalAmount: '',
         }
     },
     methods: {
+        calculateTotalPrice(){
+            var quantity = document.getElementById('id_quantity').value
+            var price = document.getElementById('id_sell_price').value
+            if (quantity.length > 0 && quantity > 0 && price.length > 0 && price > 0){
+                total = quantity * price
+                this.totalAmount = total
+            }else{
+                this.totalAmount = '';
+            }
+        },
         calculateDue(){
             var paid = document.getElementById('id_paid_amount').value
-            if (paid > 0){
-                this.dueField = true;
+            if (paid.length > 0 && paid >=0){
                 var sellprice = document.getElementById('id_sell_price').value
                 var quantity = document.getElementById('id_quantity').value
                 var totalAmount = (sellprice * quantity)
                 var due = totalAmount - paid
-                console.log(paid)
                 this.dueAmount = due
             }else{
-                this.dueField = false;
+                this.dueAmount = '';
             }
         },
     },

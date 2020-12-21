@@ -76,7 +76,6 @@ class PurchaseCreateForm(forms.ModelForm):
             # 'supplier': forms.TextInput(attrs={'placeholder': 'Name'}),
             'product_name': forms.TextInput(attrs={'placeholder': 'Name'}),
             'price': forms.TextInput(attrs={'placeholder': 'Taka'}),
-            'quantity': forms.TextInput(attrs={'placeholder': 'kg'}),
             'date_added': forms.DateInput(attrs={'placeholder': 'Date'}),
         }    
 
@@ -86,18 +85,17 @@ class StockCreateForm(forms.ModelForm):
     class Meta:
         model = Stock
         fields = ['product_name',
-                'sell_price',
+                # 'sell_price',
                 'quantity',
                 ]
         widgets = {
             'product_name': forms.TextInput(attrs={'placeholder': 'Name'}),
-            'sell_price': forms.TextInput(attrs={'placeholder': 'Taka'}),
-            'quantity': forms.TextInput(attrs={'placeholder': 'kg'}),
+            # 'sell_price': forms.TextInput(attrs={'placeholder': 'Taka'}),
         }
         labels = {
                 'product_name': 'Product (পণ্য)',
                 'quantity': 'Quantity (পরিমাণ)',
-                'sell_price': 'Sell Price (বিক্রয় মূল্য)',
+                # 'sell_price': 'Sell Price (বিক্রয় মূল্য)',
         } 
 
 
@@ -108,6 +106,7 @@ class SellProductCreateForm(forms.ModelForm):
         fields = [
                 'product_name',
                 'quantity',
+                'sack',
                 'sell_price',
                 'customer_name',
                 'token_number',
@@ -117,9 +116,10 @@ class SellProductCreateForm(forms.ModelForm):
         labels = {
                 'product_name': 'Product (পণ্য)',
                 'quantity': 'Quantity (পরিমাণ)',
+                'sack': 'Sack (বস্তা)',
                 'sell_price': 'Sell Price (বিক্রয় মূল্য)',
                 'customer_name': 'Customer Name (ক্রেতার নাম)',
-                'token_number': 'Token Number (টোকেন নাম্বার)',
+                'token_number': 'Token (টোকেন)',
                 'paid_amount': 'Paid Amount (পরিশোধিত টাকা)',
                 'date_added': 'Date (তারিখ)',
         }
@@ -128,7 +128,5 @@ class SellProductCreateForm(forms.ModelForm):
             'paid_amount': forms.TextInput(attrs={'placeholder': 'Taka'}),
             'customer_name': forms.TextInput(attrs={'placeholder': 'Name'}),
             'token_number': forms.TextInput(attrs={'placeholder': 'Token'}),
-            'quantity': forms.TextInput(attrs={'placeholder': 'kg'}),
-            'paid_amount': forms.TextInput(attrs={'placeholder': 'Taka'}),
             'date_added': forms.DateInput(attrs={'placeholder': 'Date'}),
         }

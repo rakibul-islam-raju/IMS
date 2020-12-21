@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404, reverse
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.generic import (View,
                                 TemplateView,
                                 ListView,
@@ -19,7 +19,7 @@ import json
 from datetime import date
 from django.template.loader import get_template
 from xhtml2pdf import pisa
-import datetime
+from datetime import datetime, timedelta
 
 from .models import *
 from .forms import *
@@ -97,13 +97,7 @@ def get_help(request):
     }
     return render(request, 'help.html', context)
 
-@login_required()
-def download_sells_csv(request):
-    sells_resource = SellProductResource()
-    dataset = sells_resource.export()
-    response = HttpResponse(dataset.csv, content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="sells.csv"'
-    return response
+
 
 
 class SellProductReportView(LoginRequiredMixin,
@@ -116,7 +110,7 @@ class SellProductReportView(LoginRequiredMixin,
     paginate_by = 20
 
     def get_queryset(self):
-        last_six_days = datetime.date.today() - datetime.timedelta(days=30)
+        last_six_days = datetime.now() - timedelta(days=30)
         # check for filter
         if self.request.GET:
             # if filtered
@@ -135,6 +129,7 @@ class SellProductReportView(LoginRequiredMixin,
         context["total_paid"] = sum([item.paid_amount for item in self.get_queryset()])
         context["total_due"] = sum([item.get_due_amount for item in self.get_queryset()])
         context["title"] = 'Sale Report'
+        context["sellproductFilter"] = SellProductFilter()
         return context
     
     def test_func(self, *args, **kwargs):
@@ -142,6 +137,14 @@ class SellProductReportView(LoginRequiredMixin,
             return True
         return False
 
+
+@login_required()
+def download_sells_csv(request):
+    sells_resource = SellProductResource()
+    dataset = sells_resource.export()
+    response = HttpResponse(dataset.csv, content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="sells.csv"'
+    return response
 
 class SellReportView(LoginRequiredMixin,
                     UserPassesTestMixin,
@@ -270,6 +273,25 @@ class SupplierCreateView(LoginRequiredMixin,
         return False
 
 
+class SupplierModalCreate(LoginRequiredMixin,
+                        UserPassesTestMixin,
+                        SuccessMessageMixin,
+                        CreateView):
+    model = Supplier
+    queryset = Supplier.objects.all()
+    form_class = SupplierCreateForm
+    success_url = 'purchase'
+    success_message = "%(name)s was created successfully"
+
+    def get_success_url(self, **kwargs):
+        return reverse(self.success_url)
+
+    def test_func(self):
+        if self.request.user.is_staff:
+            return True
+        return False
+
+
 class PurchaseProductCreateView(LoginRequiredMixin,
                                 UserPassesTestMixin,
                                 SuccessMessageMixin,
@@ -294,14 +316,15 @@ class PurchaseProductCreateView(LoginRequiredMixin,
             'purchases': purchases,
             'page_obj': purchases,
             'title': 'New Purchase',
-            'form': PurchaseCreateForm()
+            'form': PurchaseCreateForm(),
+            'supplier_form': SupplierCreateForm()
         }
         
         return render(self.request, 'purchase.html', context)
 
     def post(self, *args, **kwargs):
         form = PurchaseCreateForm(self.request.POST or None)
-        
+
         if form.is_valid():
             new_purchase = form.save(commit=False)
             new_purchase.added_by = self.request.user
@@ -456,15 +479,16 @@ class SellProductByID(LoginRequiredMixin,
         context = {
             'form': form,
             'title': 'New Sale',
-            # 'sells': SellProduct.objects.all()
         }
         return render(self.request, 'sell-create.html', context)
 
     def post(self, *args, **kwargs):
         product_instance = get_object_or_404(Stock, pk=self.kwargs['pk'])
         form = SellProductCreateForm(self.request.POST or None)
+
         if form.is_valid():
             quantity = form.cleaned_data.get('quantity')
+            print(quantity)
 
             if quantity <= product_instance.quantity:
                 sell = form.save(commit=False)
@@ -480,6 +504,7 @@ class SellProductByID(LoginRequiredMixin,
                 messages.warning(self.request, 'Invalid Qunatity')
                 return redirect('./')
         else:
+            # print(form.errors.as_data())
             messages.warning(self.request, 'Invalid Form')        
             return redirect('./')
 

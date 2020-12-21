@@ -18,14 +18,15 @@
                             <tr>
                                 <th>Sl No.</th>
                                 <th>Product Name</th>
-                                <th>Product Quantity</th>
+                                <th>Sack (বস্তা)</th>
+                                <th>Quantity</th>
                                 <th>Sell Price</th>
                                 <th>Total Amount</th>
                                 <th>Paid Amount</th>
                                 <th>Due Amount</th>
                                 <th>Customer Name</th>
                                 <th>Token Number</th>
-                                <th>Date (তারিখ)</th>
+                                <th>Date</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -35,6 +36,7 @@
                                 <tr>
                                     <td>{{ forloop.counter }}</td>
                                     <td>{{ sell.product_name }}</td>
+                                    <td>{{ sell.sack }} kg</td>
                                     <td>{{ sell.quantity }}</td>
                                     <td>{{ sell.sell_price }}</td>
                                     <td>{{ sell.get_total_amount }}</td>
@@ -44,7 +46,7 @@
                                     </td>
                                     <td>{{ sell.customer_name }}</td>
                                     <td>{{ sell.token_number }}</td>
-                                    <td>{{ sell.date_added }}</td>
+                                    <td>{{ sell.date_added|date }}</td>
                                     <td>
                                         <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
                                             <div class="btn-group" role="group" aria-label="First group">

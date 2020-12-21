@@ -15,7 +15,7 @@ class Office(models.Model):
     phone = models.CharField(max_length=11)
     address = models.TextField()
     status = models.BooleanField(default=True)
-    date_added = models.DateTimeField(auto_now_add=True)
+    date_added = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return self.name
@@ -51,7 +51,7 @@ class User(AbstractUser):
             'Unselect this instead of deleting accounts.'
         ),
     )
-    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+    date_joined = models.DateField(_('date joined'), default=timezone.now)
 
     def __str__(self):
         return self.username
@@ -62,6 +62,10 @@ class Supplier(models.Model):
     phone = models.CharField(max_length=100, blank=True, null=True)
     description = models.TextField(max_length=254)
     is_active = models.BooleanField(default=True)
+    date_added = models.DateField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-date_added', '-id']
 
     def __str__(self):
         return self.name
@@ -87,7 +91,7 @@ class PurchaseProduct(models.Model):
     is_active = models.BooleanField(default=True)
 
     class Meta:
-        ordering = ['-id']
+        ordering = ['-date_added', '-id']
 
     def __str__(self):
         return self.product_name
@@ -106,15 +110,15 @@ class PurchaseProduct(models.Model):
 class Stock(models.Model):
     product_name = models.CharField(max_length=30)
     quantity = models.PositiveIntegerField()
-    sell_price = models.DecimalField(blank=True, null=True, max_digits=8, decimal_places=2)
+    # sell_price = models.DecimalField(blank=True, null=True, max_digits=8, decimal_places=2)
 
     date_added = models.DateField(auto_now_add=True)
-    date_updated = models.DateField(auto_now_add=True)
+    date_updated = models.DateField(auto_now=True)
     added_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     is_active = models.BooleanField(default=True)
 
     class Meta:
-        ordering = ['-id']
+        ordering = ['-date_updated', '-id']
 
     def __str__(self):
         return self.product_name
@@ -127,8 +131,19 @@ class Stock(models.Model):
 
 
 class SellProduct(models.Model):
+    SACK_CHOICES = (
+        (5, '5 kg'),
+        (35, '35 kg'),
+        (37, '37 kg'),
+        (55, '55 kg'),
+        (50, '50 kg'),
+        (55, '55 kg'),
+        (60, '60 kg')
+    )
+
     product_name = models.ForeignKey(Stock, null=True, on_delete=models.SET_NULL)
     product_label = models.CharField(max_length=254, blank=True, null=True)
+    sack = models.IntegerField(choices=SACK_CHOICES)
     quantity = models.PositiveIntegerField()
     sell_price = models.DecimalField(max_digits=8, decimal_places=2)
     customer_name = models.CharField(max_length=30)
@@ -141,7 +156,7 @@ class SellProduct(models.Model):
     is_active = models.BooleanField(default=True)
 
     class Meta:
-        ordering = ['-id']
+        ordering = ['-date_added', '-id']
 
     def __str__(self):
         if self.product_name:
