@@ -81,12 +81,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        # 'NAME': 'nexbpthc_tafsir-inventory',
-        # 'USER': 'nexbpthc_raju',
-        # 'PASSWORD': 'raju7772588RAJU',
-        # 'HOST': 'localhost',
-        # 'PORT': '5432',
+
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'nexbpthc_tafsir_inventory',
+        'USER': 'nexbpthc_tafsir_user',
+        'PASSWORD': 'tafsir_user',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 
