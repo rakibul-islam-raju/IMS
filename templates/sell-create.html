@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
 
 {% block title %}| {{ title|title }}{% endblock title %}
@@ -7,13 +8,27 @@
 
 <div class="container-fluid" id="createSell">
 
+    <div id="alertBox"></div>
+
     <!-- Content Row -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">{{ title|title }}</h6>
         </div>
         <div class="card-body">
-            <form action="" method="POST" @change="calculateDue" autocomplete="off">
+            <form 
+                id="sell-form" 
+                {% if hasAjax %} 
+                    @submit="formSubmit" 
+                {% endif %} 
+
+                {% if not hasAjax %}
+                    method="POST"
+                    action=""
+                {% endif %}
+                @change="calculateDue" 
+                autocomplete="off"
+            >
                 {% csrf_token %}
                 <div class="row">
                     <div class="col-lg-5">
@@ -51,6 +66,7 @@
                                 id="id_quantity"
                                 name="quantity"
                                 value="{% if form.quantity.value %}{{ form.quantity.value }}{% endif %}"
+                                required
                             >
                         </div>
                     </div>
@@ -65,6 +81,7 @@
                                 placeholder="Tk"
                                 @keyup="calculateTotalPrice()"
                                 value="{% if form.sell_price.value %}{{ form.sell_price.value }}{% endif %}"
+                                required
                             >
                             <small v-if="totalAmount">Total: [[ totalAmount ]]</small>
                         </div>
@@ -140,6 +157,76 @@ const createSell = {
                 this.dueAmount = '';
             }
         },
+
+        {% if hasAjax %}
+
+        formSubmit(e){
+            e.preventDefault();
+
+            const date = document.getElementById('id_date_added')
+            const customer_name = document.getElementById('id_customer_name')
+            const token_number = document.getElementById('id_token_number')
+            const product_name = document.getElementById('id_product_name')
+            const sack = document.getElementById('id_sack')
+            const quantity = document.getElementById('id_quantity')
+            const sell_price = document.getElementById('id_sell_price')
+            const paid_amount = document.getElementById('id_paid_amount')
+
+            const alertBox = document.getElementById('alertBox')
+
+            const csrf = document.getElementsByName('csrfmiddlewaretoken')
+
+            const url = ""
+
+            const headAlerts = function(type, text){
+                alertBox.innerHTML = `<div class="alert alert-sm alert-${type} alert-dismissible fade show" role="alert">
+                                        ${text}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>`
+            }
+
+            const fd = new FormData()
+            fd.append('csrfmiddlewaretoken', csrf[0].value)
+            fd.append('date_added', date.value)
+            fd.append('customer_name', customer_name.value)
+            fd.append('token_number', token_number.value)
+            fd.append('product_name', product_name.value)
+            fd.append('sack', sack.value)
+            fd.append('quantity', quantity.value)
+            fd.append('sell_price', sell_price.value)
+            fd.append('paid_amount', paid_amount.value)
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: fd,
+                success: function(res){
+                    headAlerts('success', res.msg)
+                    setTimeout(() => {
+                        alertBox.innerHTML = ""
+                        //customer_name.value = "" 
+                        //token_number.value = "" 
+                        //product_name.value = "" 
+                        //sack.value = "" 
+                        //quantity.value = "" 
+                        //sell_price.value = "" 
+                        //paid_amount.value = "" 
+                    }, 2000)
+                },
+                error: function(err){
+                    headAlerts('danger', 'Something Went Wrong. Please try again.')
+                    console.log(err)
+                },
+                cache: false,
+                contentType: false,
+                processData: false,
+            })
+        }
+        
+        {% endif %}
+
     },
     delimiters: ['[[', ']]']
 }

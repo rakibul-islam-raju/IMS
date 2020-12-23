@@ -425,31 +425,51 @@ class SellProductCreateView(LoginRequiredMixin,
     def post(self, *args, **kwargs):
         form = SellProductCreateForm(self.request.POST or None)
 
-        if form.is_valid():
-            product_name = form.cleaned_data.get('product_name')
-            print(f'product: {product_name}')
-            product_instance = get_object_or_404(Stock, product_name=product_name)
-            quantity = form.cleaned_data.get('quantity')
+        if self.request.is_ajax():
+            if form.is_valid():
+                product_name = form.cleaned_data.get('product_name')
+                product_instance = get_object_or_404(Stock, product_name=product_name)
+                quantity = form.cleaned_data.get('quantity')
 
-            if quantity <= product_instance.quantity:
-                sell = form.save(commit=False)
-                sell.added_by = self.request.user
-                sell.save()
+                if quantity <= product_instance.quantity:
+                    sell = form.save(commit=False)
+                    sell.added_by = self.request.user
+                    sell.save()
 
-                new_qntty = product_instance.quantity - quantity
-                product_instance.quantity = new_qntty
-                product_instance.save(update_fields=['quantity'])
-                messages.success(self.request, f'{product_instance.product_name} sold successfully')        
-                return redirect('sell-create')
+                    new_qntty = product_instance.quantity - quantity
+                    product_instance.quantity = new_qntty
+                    product_instance.save(update_fields=['quantity'])
+
+                return JsonResponse({'msg': f'{product_instance.product_name} sold successfully'})
             else:
-                messages.warning(self.request, 'Invalid Qunatity')
-                return redirect('sell-create')
-        messages.warning(self.request, 'Invalid form')        
-        return redirect('sell-create')
+                return JsonResponse({'msg': form.errors.as_data()})
+
+        # if form.is_valid():
+        #     product_name = form.cleaned_data.get('product_name')
+        #     print(f'product: {product_name}')
+        #     product_instance = get_object_or_404(Stock, product_name=product_name)
+        #     quantity = form.cleaned_data.get('quantity')
+
+        #     if quantity <= product_instance.quantity:
+        #         sell = form.save(commit=False)
+        #         sell.added_by = self.request.user
+        #         sell.save()
+
+        #         new_qntty = product_instance.quantity - quantity
+        #         product_instance.quantity = new_qntty
+        #         product_instance.save(update_fields=['quantity'])
+        #         messages.success(self.request, f'{product_instance.product_name} sold successfully')        
+        #         return redirect('sell-create')
+        #     else:
+        #         messages.warning(self.request, 'Invalid Qunatity')
+        #         return redirect('sell-create')
+        # messages.warning(self.request, 'Invalid form')        
+        # return redirect('sell-create')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = 'New Sale'
+        context["hasAjax"] = True
         return context
 
     def get_success_url(self, **kwargs):
