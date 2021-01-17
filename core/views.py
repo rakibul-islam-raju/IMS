@@ -57,7 +57,7 @@ def sell_invoice(request, *args, **kwargs):
     # if we want to download the pdf :
     # response['Content-Disposition'] = 'attachment; filename="report.pdf"'
     # if we want to display the pdf :
-    filename = f'invoice-{pk}-{date.today()}'
+    filename = f'invoice-{pk}'
     response['Content-Disposition'] = f'filename="{filename}.pdf"'
     # find the template and render it.
     template = get_template(template_path)
