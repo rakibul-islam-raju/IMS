@@ -122,6 +122,48 @@ class SellProductReportView(LoginRequiredMixin,
         query_filter = SellProductFilter(self.request.GET, queryset)
 
         return query_filter.qs
+
+    def report_summery(self, **kwargs):
+        qs = self.get_queryset()
+        searched_for = {}
+
+        if self.request.GET:
+            customer_name = self.request.GET['customer_name']
+            if customer_name:
+                searched_for['customer_name'] = customer_name
+                # print(customer_name)
+
+            token = self.request.GET['token_number']
+            if token:
+                searched_for['token'] = token
+                # print(token)
+
+            product_name = self.request.GET['product_name']
+            if product_name:
+                searched_for['product_name'] = product_name
+                # print(product_name)
+
+            date = self.request.GET['date_added']
+            if date:
+                searched_for['date'] = date
+                # print(date)
+
+            start_date = self.request.GET['start_date']
+            if start_date:
+                searched_for['start_date'] = start_date
+                # print(start_date)
+
+            end_date = self.request.GET['end_date']
+            if end_date:
+                searched_for['end_date'] = end_date
+                # print(end_date)
+
+        context = {
+            'qs': qs,
+            'searched_for': searched_for,
+        }
+
+        return context
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -130,6 +172,7 @@ class SellProductReportView(LoginRequiredMixin,
         context["total_due"] = sum([item.get_due_amount for item in self.get_queryset()])
         context["title"] = 'Sale Report'
         context["sellproductFilter"] = SellProductFilter()
+        context["report_summery"] = self.report_summery()
         return context
     
     def test_func(self, *args, **kwargs):
