@@ -12,8 +12,6 @@
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">{{ title|title }}</h6>
-            {% comment %} {% url 'sells-csv' %} {% endcomment %}
-            <button id="downloadPdf" onclick="downloadPDF()" class="btn btn-sm btn-primary buttons-right d-inline">Download CSV <i class="fa fa-cloud-download-alt"></i></button>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -54,6 +52,9 @@
                 </form>
                 <br>
                 <br>
+                <button id="downloadReportPDF" class="btn btn-sm btn-primary buttons-right d-inline">Download PDF <i class="fa fa-cloud-download-alt"></i></button>
+                <br>
+                <br>
                 <table class="table table-bordered" id="reportDataTable" width="100%" cellspacing="0" style="font-size: 14px;">
                     <thead>
                         <tr>
@@ -70,7 +71,7 @@
                         </tr>
                     </thead>
 
-                    <tbody id="bold" style="color: #000">
+                    <tbody>
                         {% for obj in filter %}
                         <tr>
                             <td>{{ obj.product_name }}</td>
@@ -87,7 +88,7 @@
                         {% endfor %}
                     </tbody>
 
-                    <thead id="bold" style="color: #000">
+                    <thead>
                         <tr>
                             <th colspan="4" class="text-right">Grand Total =</th>
                             <th>{{ total_sell }}</th>
@@ -105,31 +106,3 @@
 </div>
 
 {% endblock body %}
-
-{% block script %}
-
-<script type="text/javascript">
-
-function downloadPDF(){
-    //document.getElementById('bold').style.color = "#000";
-    //document.getElementById('bold').style.fontWeight = "bold";
-    var element = document.getElementById('reportDataTable');
-    var opt = {
-        margin: [15, 5, 15, 5],
-        filename: 'report.pdf',
-        image: { type: 'jpeg', quality: 1 },
-        html2canvas: {
-            dpi: 192,
-            scale:4,
-            letterRendering: true,
-            useCORS: true
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
-    };
-
-    html2pdf(element, opt).save();
-    }
-
-</script>
-
-{% endblock script %}
