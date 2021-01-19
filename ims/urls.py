@@ -39,6 +39,7 @@ urlpatterns = [
     path('sells/delete/<int:pk>/', SellProductDeleteView.as_view(), name='sell-delete'),
 
     path('sells/report/', SellProductReportView.as_view(), name='sell-report'),
+    path('sells/report/<download>', SellProductReportView.as_view(), name='sell-report-pdf'),
     path('sells/invoice/<int:pk>', sell_invoice, name='sell-invoice'),
 
     path('charts/', ChartView.as_view(), name='charts'),

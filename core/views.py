@@ -20,11 +20,13 @@ from datetime import date
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from datetime import datetime, timedelta
+from io import BytesIO
 
 from .models import *
 from .forms import *
 from .filters import *
 from .resourses import *
+from .utils import render_to_pdf
 
 
 class ChartView(TemplateView,
@@ -98,35 +100,74 @@ def get_help(request):
     return render(request, 'help.html', context)
 
 
+def sell_report_pdf(request, *args, **kwargs):
+    template = get_template('sell_report_pdf.html')
+    context = {
+        'qs': queryset
+    }
+    html = template.render(context)
+    pdf = render_to_pdf('sell_report_pdf.html', context)
+    if pdf:
+        response = HttpResponse(pdf, content_type='application/pdf')
+        filename = 'Sale-report'
+        content = "inline; filename='%s'" %(filename)
+        download = request.GET.get('download')
+        if download:
+            content = "attachment; filename='%s'" %(filename)
+        response['Content-Disposition'] = content
+        return response
+    return HttpResponse('Not found.')
 
 
 class SellProductReportView(LoginRequiredMixin,
                         UserPassesTestMixin,
                         SuccessMessageMixin,
-                        ListView):
-    model = SellProduct
-    template_name = 'sell_report.html'
-    context_object_name = 'filter'
-    paginate_by = 20
+                        # ListView
+                        View
+                        ):
+    # model = SellProduct
+    # template_name = 'sell_report.html'
+    # context_object_name = 'filter'
+    # paginate_by = 20
 
-    def get_queryset(self):
-        last_six_days = datetime.now() - timedelta(days=30)
+    # def get_queryset(self):
+    #     last_month = datetime.now() - timedelta(days=30)
+    #     # check for filter
+    #     if self.request.GET:
+    #         # if filtered
+    #         queryset = SellProduct.objects.filter(is_active=True)
+    #     else:
+    #         # if not filtered
+    #         queryset = SellProduct.objects.filter(is_active=True, date_added__gte=last_month)
+        
+    #     query_filter = SellProductFilter(self.request.GET, queryset)
+
+    #     return query_filter.qs
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context["total_sell"] = sum([item.get_total_amount for item in self.get_queryset()])
+    #     context["total_paid"] = sum([item.paid_amount for item in self.get_queryset()])
+    #     context["total_due"] = sum([item.get_due_amount for item in self.get_queryset()])
+    #     context["title"] = 'Sale Report'
+    #     context["sellproductFilter"] = SellProductFilter()
+    #     return context
+
+    def get(self, request, *args, **kwargs):
+        last_month = datetime.today() - timedelta(days=30)
         # check for filter
         if self.request.GET:
             # if filtered
             queryset = SellProduct.objects.filter(is_active=True)
         else:
             # if not filtered
-            queryset = SellProduct.objects.filter(is_active=True, date_added__gte=last_six_days)
+            queryset = SellProduct.objects.filter(is_active=True, date_added__gte=last_month)
         
         query_filter = SellProductFilter(self.request.GET, queryset)
+        qs = query_filter.qs
 
-        return query_filter.qs
-
-    def report_summery(self, **kwargs):
-        qs = self.get_queryset()
+        # report summary
         searched_for = {}
-
         if self.request.GET:
             customer_name = self.request.GET['customer_name']
             if customer_name:
@@ -158,22 +199,41 @@ class SellProductReportView(LoginRequiredMixin,
                 searched_for['end_date'] = end_date
                 # print(end_date)
 
-        context = {
-            'qs': qs,
-            'searched_for': searched_for,
-        }
+        # generate PDF
+        download = request.GET.get('download')
+        if download:
+            template = get_template('sell_report_pdf.html')
+            pdf_context = {
+                'qs': qs,
+                'office': Office.objects.first(),
+                'total_sell': sum([item.get_total_amount for item in qs]),
+                'total_paid': sum([item.paid_amount for item in qs]),
+                'total_due': sum([item.get_due_amount for item in qs]),
+                'searched_for': searched_for,
+                'last_month': last_month,
+            }
+            html = template.render(pdf_context)
+            pdf = render_to_pdf('sell_report_pdf.html', pdf_context)
+            if pdf:
+                response = HttpResponse(pdf, content_type='application/pdf')
+                filename = 'Report'
+                content = f"inline; filename={filename}"
+                download = request.GET.get('download')
+                content = f"attachment; filename={filename}"
+                response['Content-Disposition'] = content
+                return response
 
-        return context
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["total_sell"] = sum([item.get_total_amount for item in self.get_queryset()])
-        context["total_paid"] = sum([item.paid_amount for item in self.get_queryset()])
-        context["total_due"] = sum([item.get_due_amount for item in self.get_queryset()])
-        context["title"] = 'Sale Report'
-        context["sellproductFilter"] = SellProductFilter()
-        context["report_summery"] = self.report_summery()
-        return context
+        context = {
+            'total_sell': sum([item.get_total_amount for item in qs]),
+            'total_paid': sum([item.paid_amount for item in qs]),
+            'total_due': sum([item.get_due_amount for item in qs]),
+            'title': 'Sale Report',
+            'sellproductFilter': SellProductFilter(),
+            'filter': qs,
+            'searched_for': searched_for,
+            'last_month': last_month,
+        }
+        return render(request, 'sell_report.html', context)
     
     def test_func(self, *args, **kwargs):
         if self.request.user.is_staff:
@@ -188,6 +248,7 @@ def download_sells_csv(request):
     response = HttpResponse(dataset.csv, content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="sells.csv"'
     return response
+
 
 class SellReportView(LoginRequiredMixin,
                     UserPassesTestMixin,
@@ -489,7 +550,6 @@ class SellProductCreateView(LoginRequiredMixin,
 
         # if form.is_valid():
         #     product_name = form.cleaned_data.get('product_name')
-        #     print(f'product: {product_name}')
         #     product_instance = get_object_or_404(Stock, product_name=product_name)
         #     quantity = form.cleaned_data.get('quantity')
 
@@ -551,7 +611,6 @@ class SellProductByID(LoginRequiredMixin,
 
         if form.is_valid():
             quantity = form.cleaned_data.get('quantity')
-            print(quantity)
 
             if quantity <= product_instance.quantity:
                 sell = form.save(commit=False)
@@ -567,7 +626,6 @@ class SellProductByID(LoginRequiredMixin,
                 messages.warning(self.request, 'Invalid Qunatity')
                 return redirect('./')
         else:
-            # print(form.errors.as_data())
             messages.warning(self.request, 'Invalid Form')        
             return redirect('./')
 
