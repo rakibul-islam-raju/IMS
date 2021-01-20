@@ -100,59 +100,84 @@ def get_help(request):
     return render(request, 'help.html', context)
 
 
-def sell_report_pdf(request, *args, **kwargs):
-    template = get_template('sell_report_pdf.html')
-    context = {
-        'qs': queryset
-    }
-    html = template.render(context)
-    pdf = render_to_pdf('sell_report_pdf.html', context)
-    if pdf:
-        response = HttpResponse(pdf, content_type='application/pdf')
-        filename = 'Sale-report'
-        content = "inline; filename='%s'" %(filename)
+class PurchaseProductReportView(LoginRequiredMixin,
+                                UserPassesTestMixin,
+                                SuccessMessageMixin,
+                                View):
+    def get(self, request, *args, **kwargs):
+        last_month = datetime.today() - timedelta(days=30)
+        # check for filter
+        if self.request.GET:
+            # if filtered
+            queryset = PurchaseProduct.objects.filter(is_active=True)
+        else:
+            # if not filtered
+            queryset = PurchaseProduct.objects.filter(is_active=True, date_added__gte=last_month)
+        
+        query_filter = PurchaseProductFilter(self.request.GET, queryset)
+        qs = query_filter.qs
+
+        # report summary
+        searched_for = {}
+        if self.request.GET:
+            if self.request.GET['date_added']:
+                date = self.request.GET['date_added']
+                if date:
+                    searched_for['date'] = date
+
+            if self.request.GET['start_date']:
+                start_date = self.request.GET['start_date']
+                if start_date:
+                    searched_for['start_date'] = start_date
+
+            if self.request.GET['start_date']:
+                end_date = self.request.GET['end_date']
+                if end_date:
+                    searched_for['end_date'] = end_date
+
+        # generate PDF
         download = request.GET.get('download')
         if download:
-            content = "attachment; filename='%s'" %(filename)
-        response['Content-Disposition'] = content
-        return response
-    return HttpResponse('Not found.')
+            template = get_template('purchase_report_pdf.html')
+            pdf_context = {
+                'qs': qs,
+                'office': Office.objects.first(),
+                'total_purchase': sum([item.price for item in qs]),
+                'searched_for': searched_for,
+                'last_month': last_month,
+            }
+            html = template.render(pdf_context)
+            pdf = render_to_pdf('purchase_report_pdf.html', pdf_context)
+            if pdf:
+                response = HttpResponse(pdf, content_type='application/pdf')
+                filename = 'Purchase-Report'
+                content = f"inline; filename={filename}"
+                download = request.GET.get('download')
+                content = f"attachment; filename={filename}"
+                response['Content-Disposition'] = content
+                return response
+
+        context = {
+            'total_purchase': sum([item.price for item in qs]),
+            'grand_total_price': sum([item.total_purchase_price for item in qs]),
+            'title': 'Purchase Report',
+            'PurchaseProduct': PurchaseProduct(),
+            'filter': qs,
+            'searched_for': searched_for,
+            'last_month': last_month,
+        }
+        return render(request, 'purchase_report.html', context)
+
+    def test_func(self, *args, **kwargs):
+        if self.request.user.is_staff:
+            return True
+        return False
 
 
 class SellProductReportView(LoginRequiredMixin,
                         UserPassesTestMixin,
                         SuccessMessageMixin,
-                        # ListView
-                        View
-                        ):
-    # model = SellProduct
-    # template_name = 'sell_report.html'
-    # context_object_name = 'filter'
-    # paginate_by = 20
-
-    # def get_queryset(self):
-    #     last_month = datetime.now() - timedelta(days=30)
-    #     # check for filter
-    #     if self.request.GET:
-    #         # if filtered
-    #         queryset = SellProduct.objects.filter(is_active=True)
-    #     else:
-    #         # if not filtered
-    #         queryset = SellProduct.objects.filter(is_active=True, date_added__gte=last_month)
-        
-    #     query_filter = SellProductFilter(self.request.GET, queryset)
-
-    #     return query_filter.qs
-
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context["total_sell"] = sum([item.get_total_amount for item in self.get_queryset()])
-    #     context["total_paid"] = sum([item.paid_amount for item in self.get_queryset()])
-    #     context["total_due"] = sum([item.get_due_amount for item in self.get_queryset()])
-    #     context["title"] = 'Sale Report'
-    #     context["sellproductFilter"] = SellProductFilter()
-    #     return context
-
+                        View):
     def get(self, request, *args, **kwargs):
         last_month = datetime.today() - timedelta(days=30)
         # check for filter
@@ -169,35 +194,35 @@ class SellProductReportView(LoginRequiredMixin,
         # report summary
         searched_for = {}
         if self.request.GET:
-            customer_name = self.request.GET['customer_name']
-            if customer_name:
-                searched_for['customer_name'] = customer_name
-                # print(customer_name)
+            if self.request.GET['customer_name']:
+                customer_name = self.request.GET['customer_name']
+                if customer_name:
+                    searched_for['customer_name'] = customer_name
 
-            token = self.request.GET['token_number']
-            if token:
-                searched_for['token'] = token
-                # print(token)
+            if self.request.GET['token_number']:
+                token = self.request.GET['token_number']
+                if token:
+                    searched_for['token'] = token
 
-            product_name = self.request.GET['product_name']
-            if product_name:
-                searched_for['product_name'] = product_name
-                # print(product_name)
+            if self.request.GET['product_name']:
+                product_name = self.request.GET['product_name']
+                if product_name:
+                    searched_for['product_name'] = product_name
 
-            date = self.request.GET['date_added']
-            if date:
-                searched_for['date'] = date
-                # print(date)
+            if self.request.GET['date_added']:
+                date = self.request.GET['date_added']
+                if date:
+                    searched_for['date'] = date
 
-            start_date = self.request.GET['start_date']
-            if start_date:
-                searched_for['start_date'] = start_date
-                # print(start_date)
+            if self.request.GET['start_date']:
+                start_date = self.request.GET['start_date']
+                if start_date:
+                    searched_for['start_date'] = start_date
 
-            end_date = self.request.GET['end_date']
-            if end_date:
-                searched_for['end_date'] = end_date
-                # print(end_date)
+            if self.request.GET['start_date']:
+                end_date = self.request.GET['end_date']
+                if end_date:
+                    searched_for['end_date'] = end_date
 
         # generate PDF
         download = request.GET.get('download')
@@ -239,15 +264,6 @@ class SellProductReportView(LoginRequiredMixin,
         if self.request.user.is_staff:
             return True
         return False
-
-
-@login_required()
-def download_sells_csv(request):
-    sells_resource = SellProductResource()
-    dataset = sells_resource.export()
-    response = HttpResponse(dataset.csv, content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="sells.csv"'
-    return response
 
 
 class SellReportView(LoginRequiredMixin,

@@ -13,7 +13,6 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
 
     path('help/', get_help, name='help'),
-    path('download_sells_csv', download_sells_csv, name='sells-csv'),
 
     path('', HomeView.as_view(), name='home'),
     path('users/', UserManagement.as_view(), name='user'),
@@ -25,6 +24,7 @@ urlpatterns = [
     path('suppliers/delete/<int:pk>', SupplierDeleteView.as_view(), name='supplier-delete'),
 
     path('purchases/', PurchaseProductCreateView.as_view(), name='purchase'),
+    path('purchases/report', PurchaseProductReportView.as_view(), name='purchase-report'),
     path('purchase/<int:pk>/', PurchaseProductUpdateView.as_view(), name='purchase-update'),
     path('purchase/delete/<int:pk>/', PurchaseProductDeleteView.as_view(), name='purchase-delete'),
 

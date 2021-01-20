@@ -129,6 +129,6 @@ class SellProductCreateForm(forms.ModelForm):
             'sell_price': forms.TextInput(attrs={'placeholder': 'Taka'}),
             'paid_amount': forms.TextInput(attrs={'placeholder': 'Taka'}),
             'customer_name': forms.TextInput(attrs={'placeholder': 'Name'}),
-            'token_number': forms.TextInput(attrs={'placeholder': 'Token'}),
+            'token_number': forms.NumberInput(attrs={'placeholder': 'Token'}),
             'date_added': forms.DateInput(attrs={'placeholder': 'Date'}),
         }
