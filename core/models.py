@@ -135,7 +135,6 @@ class SellProduct(models.Model):
         (5, '5 kg'),
         (35, '35 kg'),
         (37, '37 kg'),
-        (55, '55 kg'),
         (50, '50 kg'),
         (55, '55 kg'),
         (60, '60 kg')

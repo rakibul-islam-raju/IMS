@@ -13,7 +13,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail
-from django.db.models import Sum
+from django.db.models import Sum, Count
 
 import json
 from datetime import date
@@ -107,7 +107,7 @@ class PurchaseProductReportView(LoginRequiredMixin,
     def get(self, request, *args, **kwargs):
         last_month = datetime.today() - timedelta(days=30)
         # check for filter
-        if self.request.GET:
+        if self.request.GET and not self.request.GET.get('download'):
             # if filtered
             queryset = PurchaseProduct.objects.filter(is_active=True)
         else:
@@ -120,20 +120,20 @@ class PurchaseProductReportView(LoginRequiredMixin,
         # report summary
         searched_for = {}
         if self.request.GET:
-            if self.request.GET['date_added']:
-                date = self.request.GET['date_added']
-                if date:
-                    searched_for['date'] = date
+            date = self.request.GET.get('date_added')
+            if date:
+                searched_for['date'] = date
 
-            if self.request.GET['start_date']:
-                start_date = self.request.GET['start_date']
-                if start_date:
-                    searched_for['start_date'] = start_date
+            start_date = self.request.GET.get('start_date')
+            if start_date:
+                searched_for['start date'] = start_date
 
-            if self.request.GET['start_date']:
-                end_date = self.request.GET['end_date']
-                if end_date:
-                    searched_for['end_date'] = end_date
+            end_date = self.request.GET.get('end_date')
+            if end_date:
+                searched_for['end date'] = end_date
+
+        if len(searched_for) <= 0:
+            searched_for['start date'] = last_month
 
         # generate PDF
         download = request.GET.get('download')
@@ -142,9 +142,8 @@ class PurchaseProductReportView(LoginRequiredMixin,
             pdf_context = {
                 'qs': qs,
                 'office': Office.objects.first(),
-                'total_purchase': sum([item.price for item in qs]),
+                'grand_total_price': sum([item.total_purchase_price for item in qs]),
                 'searched_for': searched_for,
-                'last_month': last_month,
             }
             html = template.render(pdf_context)
             pdf = render_to_pdf('purchase_report_pdf.html', pdf_context)
@@ -158,13 +157,11 @@ class PurchaseProductReportView(LoginRequiredMixin,
                 return response
 
         context = {
-            'total_purchase': sum([item.price for item in qs]),
             'grand_total_price': sum([item.total_purchase_price for item in qs]),
             'title': 'Purchase Report',
             'PurchaseProduct': PurchaseProduct(),
             'filter': qs,
             'searched_for': searched_for,
-            'last_month': last_month,
         }
         return render(request, 'purchase_report.html', context)
 
@@ -181,7 +178,7 @@ class SellProductReportView(LoginRequiredMixin,
     def get(self, request, *args, **kwargs):
         last_month = datetime.today() - timedelta(days=30)
         # check for filter
-        if self.request.GET:
+        if self.request.GET and not self.request.GET.get('download'):
             # if filtered
             queryset = SellProduct.objects.filter(is_active=True)
         else:
@@ -191,38 +188,44 @@ class SellProductReportView(LoginRequiredMixin,
         query_filter = SellProductFilter(self.request.GET, queryset)
         qs = query_filter.qs
 
+        sack_count = {
+            'sack5': qs.filter(sack=5).count(),
+            'sack35': qs.filter(sack=35).count(),
+            'sack37': qs.filter(sack=37).count(),
+            'sack50': qs.filter(sack=50).count(),
+            'sack55': qs.filter(sack=55).count(),
+            'sack60': qs.filter(sack=60).count()
+        }
+
         # report summary
         searched_for = {}
         if self.request.GET:
-            if self.request.GET['customer_name']:
-                customer_name = self.request.GET['customer_name']
-                if customer_name:
-                    searched_for['customer_name'] = customer_name
+            customer_name = self.request.GET.get('customer_name')
+            if customer_name:
+                searched_for['customer name'] = customer_name
 
-            if self.request.GET['token_number']:
-                token = self.request.GET['token_number']
-                if token:
-                    searched_for['token'] = token
+            token = self.request.GET.get('token_number')
+            if token:
+                searched_for['token'] = token
 
-            if self.request.GET['product_name']:
-                product_name = self.request.GET['product_name']
-                if product_name:
-                    searched_for['product_name'] = product_name
+            product_name = self.request.GET.get('product_name')
+            if product_name:
+                searched_for['product name'] = product_name
 
-            if self.request.GET['date_added']:
-                date = self.request.GET['date_added']
-                if date:
-                    searched_for['date'] = date
+            date = self.request.GET.get('date_added')
+            if date:
+                searched_for['date'] = date
 
-            if self.request.GET['start_date']:
-                start_date = self.request.GET['start_date']
-                if start_date:
-                    searched_for['start_date'] = start_date
+            start_date = self.request.GET.get('start_date')
+            if start_date:
+                searched_for['start date'] = start_date
 
-            if self.request.GET['start_date']:
-                end_date = self.request.GET['end_date']
-                if end_date:
-                    searched_for['end_date'] = end_date
+            end_date = self.request.GET.get('end_date')
+            if end_date:
+                searched_for['end date'] = end_date
+
+        if len(searched_for) <= 0:
+            searched_for['start date'] = last_month
 
         # generate PDF
         download = request.GET.get('download')
@@ -235,7 +238,7 @@ class SellProductReportView(LoginRequiredMixin,
                 'total_paid': sum([item.paid_amount for item in qs]),
                 'total_due': sum([item.get_due_amount for item in qs]),
                 'searched_for': searched_for,
-                'last_month': last_month,
+                # 'sack_count': sack_count
             }
             html = template.render(pdf_context)
             pdf = render_to_pdf('sell_report_pdf.html', pdf_context)
@@ -256,7 +259,7 @@ class SellProductReportView(LoginRequiredMixin,
             'sellproductFilter': SellProductFilter(),
             'filter': qs,
             'searched_for': searched_for,
-            'last_month': last_month,
+            'sack_count': sack_count,
         }
         return render(request, 'sell_report.html', context)
     

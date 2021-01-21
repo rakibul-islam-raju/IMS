@@ -62,10 +62,62 @@
                                 {% for key, value in searched_for.items %}
                                     <span class="mr-3"><b>{{key|capfirst}}: </b>{{value}}</span> 
                                 {% endfor %}
-                            {% else %}
-                                <span class="mr-3"><b>Start Date</b>: {{last_month|date}}</span> 
-                                <span class="mr-3"><b>End Date</b>: Today</span> 
                             {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="report-summary mt-3">
+                    <div class="card">
+                        <div class="card-header text-primary">
+                            <h6 class="m-0 font-weight-bold text-primary">Report Summary</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row d-flex justify-content-between">
+                                <div class="col-lg-4">
+                                    <table width="100%">
+                                        <tbody>
+                                            <tr>
+                                                <th>Total Sale</th>
+                                                <td>{{ filter.count }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Total Sale Price</th>
+                                                <td>{{ total_sell }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Total Paid</th>
+                                                <td>{{ total_paid }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Total Due</th>
+                                                <td>{{ total_due }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-lg-7 ">
+                                    <table class="table table-bordered" width="100%">
+                                        <tbody>
+                                            <tr>
+                                                <th>Product Sack</th>
+                                                <td>5kg</td>
+                                                <td>35kg</td>
+                                                <td>37kg</td>
+                                                <td>50kg</td>
+                                                <td>55kg</td>
+                                                <td>60kg</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Quantity</th>
+                                                {% for key, value in sack_count.items %}
+                                                <td> {{value}}</td>
+                                                {% endfor %}
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>

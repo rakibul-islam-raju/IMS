@@ -27,9 +27,6 @@
             {% for key, value in searched_for.items %}
                 <span style="margin-right: 5px"><b>{{key|capfirst}}: </b>{{value}}</span> 
             {% endfor %}
-        {% else %}
-            <span style="margin-right: 5px"><b>Start Date</b>: {{last_month|date}}</span> 
-            <span style="margin-right: 5px"><b>End Date</b>: Today</span> 
         {% endif %}
         </div>
     </div>
@@ -43,8 +40,8 @@
                     <td>: {{qs.count}}</td>
                 </tr>
                 <tr>
-                    <td style="width: 10%"><b>Total Sell</b></td>
-                    <td>: {{total_purchase}}</td>
+                    <td style="width: 10%"><b>Total Purchase</b></td>
+                    <td>: {{grand_total_price}}</td>
                 </tr>
             </tbody>
         </table>
