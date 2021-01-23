@@ -29,6 +29,26 @@ from .resourses import *
 from .utils import render_to_pdf
 
 
+class SellProductSearch(View):
+    def post(self, request, *args, **kwargs):
+        search_str = json.loads(request.body).get('searchSells')
+
+        sells = SellProduct.objects.filter(
+            product_name__product_name__contains=search_str, is_active=True
+        ) | SellProduct.objects.filter(
+            sack__istartswith=search_str, is_active=True
+        ) | SellProduct.objects.filter(
+            customer_name__exact=search_str, is_active=True
+        ) | SellProduct.objects.filter(
+            token_number__exact=search_str, is_active=True
+        ) | SellProduct.objects.filter(
+            date_added__icontains=search_str, is_active=True
+        )
+        print(sells)
+        data = sells.values()
+        return JsonResponse(list(data), safe=False)
+
+
 class ChartView(TemplateView,
                 LoginRequiredMixin,
                 UserPassesTestMixin):
@@ -794,7 +814,6 @@ class SellProductUpdateView(LoginRequiredMixin,
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = 'Edit Sale'
-        # context["sells"] = SellProduct.objects.filter(is_active=True)
         return context
     
     def get_success_url(self, **kwargs):

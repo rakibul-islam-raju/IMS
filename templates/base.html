@@ -246,7 +246,6 @@
   </div>
 
   <!-- main js -->
-  <script src="{% static 'js/main.js' %}"></script>
   <!-- Bootstrap core JavaScript-->
   <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
   <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
@@ -271,8 +270,8 @@
   <script src="{% static 'js/demo/datatables-demo.js' %}"></script>
 
   <!-- Page level custom scripts -->
-  <script src="{% static 'js/demo/chart-area-demo.js' %}"></script>
-  <script src="{% static 'js/demo/chart-pie-demo.js' %}"></script>
+  {% comment %} <script src="{% static 'js/demo/chart-area-demo.js' %}"></script>
+  <script src="{% static 'js/demo/chart-pie-demo.js' %}"></script> {% endcomment %}
 
   {% block script %}
   {% endblock script %}
