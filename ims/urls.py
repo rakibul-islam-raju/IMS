@@ -20,8 +20,8 @@ urlpatterns = [
     # Suppliers url
     path('purchase/suppliers/', SupplierModalCreate.as_view(), name='supplier-modal'),
     path('suppliers/', SupplierCreateView.as_view(), name='supplier'),
-    path('suppliers/<int:pk>', SupplierUpdateView.as_view(), name='supplier-update'),
-    path('suppliers/delete/<int:pk>', SupplierDeleteView.as_view(), name='supplier-delete'),
+    path('suppliers/<int:pk>/', SupplierUpdateView.as_view(), name='supplier-update'),
+    path('suppliers/delete/<int:pk>/', SupplierDeleteView.as_view(), name='supplier-delete'),
     # Purchases urls
     path('purchases/', PurchaseProductCreateView.as_view(), name='purchase'),
     path('purchases/report', PurchaseProductReportView.as_view(), name='purchase-report'),
@@ -47,6 +47,7 @@ urlpatterns = [
     # search endpoints
     path('sells/search', csrf_exempt(SellProductSearch.as_view()), name="sells-search"),
     path('purchases/search', csrf_exempt(PurchaseProductSearch.as_view()), name="purchases-search"),
+    path('supplier/search', csrf_exempt(SupplierSearch.as_view()), name="supplier-search"),
 ]
 
 admin.site.site_header = 'Inventory Admin Panel'

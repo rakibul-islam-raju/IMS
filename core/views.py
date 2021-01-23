@@ -72,6 +72,20 @@ class PurchaseProductSearch(View):
         return JsonResponse(data, safe=False)
 
 
+class SupplierSearch(View):
+    def post(self, request, *args, **kwargs):
+        search_str = json.loads(request.body).get('searchSupplier')
+
+        purchases = Supplier.objects.filter(
+            name__icontains=search_str, is_active=True
+        ) | Supplier.objects.filter(
+            phone__exact=search_str, is_active=True
+        )
+
+        data = purchases.values()
+        return JsonResponse(list(data), safe=False)
+
+
 class ChartView(TemplateView,
                 LoginRequiredMixin,
                 UserPassesTestMixin):
