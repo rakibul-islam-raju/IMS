@@ -80,7 +80,7 @@ class Supplier(models.Model):
 class PurchaseProduct(models.Model):
     supplier = models.ForeignKey(Supplier, blank=True, null=True, on_delete=models.SET_NULL)
     
-    product_name = models.CharField(max_length=30, default='গম')
+    product_name = models.CharField(max_length=30, default='Wheat')
     price = models.DecimalField(max_digits=8, decimal_places=2)
     quantity = models.PositiveIntegerField()
     chalan_number = models.CharField(max_length=30, blank=True, null=True)

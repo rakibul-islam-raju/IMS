@@ -6,7 +6,7 @@
 
 {% block body %}
 
-<div class="container-fluid" id="sell-search">
+<div class="container-fluid" id="ajax-search">
 
     <div class="card shadow mb-4">
                 <div class="card-header py-3">
@@ -124,12 +124,12 @@
                                                 <a target="_blank" v-bind:href="'http://' + url + '/sells/invoice/' + item.id" class="btn btn-sm btn-outline-info"><i class="fa fa-file-alt"></i></a>
 
                                                 {% if request.user.is_superuser %}
-                                                <a class="btn btn-sm btn-outline-danger" href="#" data-toggle="modal" data-target="#deleteModal">
+                                                <a class="btn btn-sm btn-outline-danger" href="#" data-toggle="modal" v-bind:data-target="'#delete' + item.id">
                                                     <i class="fa fa-trash-alt"></i>
                                                 </a>
 
                                                 <!-- delete Modal-->
-                                                <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal fade" v-bind:id="'delete' + item.id" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                                     <div class="modal-dialog" role="document">
                                                         <div class="modal-content">
                                                             <div class="modal-header">

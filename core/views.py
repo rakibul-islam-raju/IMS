@@ -38,15 +38,38 @@ class SellProductSearch(View):
         ) | SellProduct.objects.filter(
             sack__istartswith=search_str, is_active=True
         ) | SellProduct.objects.filter(
-            customer_name__exact=search_str, is_active=True
+            customer_name__contains=search_str, is_active=True
         ) | SellProduct.objects.filter(
             token_number__exact=search_str, is_active=True
         ) | SellProduct.objects.filter(
             date_added__icontains=search_str, is_active=True
         )
-        print(sells)
         data = sells.values()
         return JsonResponse(list(data), safe=False)
+
+
+class PurchaseProductSearch(View):
+    def post(self, request, *args, **kwargs):
+        search_str = json.loads(request.body).get('searchPurchases')
+
+        purchases = PurchaseProduct.objects.filter(
+            chalan_number__exact=search_str, is_active=True
+        ) | PurchaseProduct.objects.filter(
+            supplier__name__icontains=search_str, is_active=True
+        ) | PurchaseProduct.objects.filter(
+            date_added__icontains=search_str, is_active=True
+        )
+
+        suppliers = Supplier.objects.filter(is_active=True)
+
+        purchases = purchases.values()
+        suppliers = suppliers.values()
+
+        data = {
+            'purchases': list(purchases),
+            'suppliers': list(suppliers)
+        }
+        return JsonResponse(data, safe=False)
 
 
 class ChartView(TemplateView,

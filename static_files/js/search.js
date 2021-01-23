@@ -1,5 +1,5 @@
 
-const sellSearch = {
+const search = {
     data(){
         return{
             searchedData: false,
@@ -11,9 +11,9 @@ const sellSearch = {
         }
     },
     methods: {
+        // search sells
         searchSellProdyct(){
             this.url = window.location.host
-            const pagination = document.getElementById('pagination')
             const searchValue = document.getElementById('searchSellProduct').value
             if (searchValue.trim().length > 0){
                 fetch("/sells/search", {
@@ -42,4 +42,4 @@ const sellSearch = {
 }
 
 
-Vue.createApp(sellSearch).mount('#sell-search')
+Vue.createApp(search).mount('#ajax-search')

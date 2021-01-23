@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
 
 {% block title %}| {{ title|title }}{% endblock title %}
 
@@ -109,11 +110,16 @@
         </div>
     </div>
 
-    <div class="card shadow mb-4">
+    <div class="card shadow mb-4" id="ajax-search">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Purchase Products</h6>
         </div>
         <div class="card-body">
+            <div class="row justify-content-end">
+                <div class="col-lg-4 text-right">
+                    <input @keyup="searchPurchaseProduct()"  id="searchSellProduct" class="form-control mb-3" type="text" placeholder="Search here...">
+                </div>
+            </div>
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
@@ -130,7 +136,7 @@
                     </tr>
                     </thead>
 
-                    <tbody>
+                    <tbody id="searchTable" v-if="showTable">
                         {% for purchase in purchases %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
@@ -142,46 +148,106 @@
                             <td>{{ purchase.chalan_number }}</td>
                             <td>{{ purchase.date_added }}</td>
                             <td class="text-center">
-                                <a href="{{ purchase.get_update_url }}" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a>
-                                {% if request.user.is_superuser %}
-                                    <a class="btn btn-sm btn-outline-danger" href="#" data-toggle="modal" data-target="#delet{{purchase.id}}">
-                                        <i class="fa fa-trash-alt"></i>
-                                    </a>
+                                <div class="btn-group">
+                                    <a href="{{ purchase.get_update_url }}" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a>
+                                    {% if request.user.is_superuser %}
+                                        <a class="btn btn-sm btn-outline-danger" href="#" data-toggle="modal" data-target="#delet{{purchase.id}}">
+                                            <i class="fa fa-trash-alt"></i>
+                                        </a>
 
-                                    <!-- delete Modal-->
-                                    <div class="modal fade" id="delet{{purchase.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel">Ready to Delete?</h5>
-                                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">×</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                Select "Delete" below if you are ready to delete this item.
-                                                <p class="text-danger"><span class="badge badge-danger mr-2">Warning: </span>This action will permanently delete your item.</p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <form action="{{ purchase.get_delete_url}}" method="POST">
-                                                        {% csrf_token %}
-                                                        <button type="submit" class="btn btn-danger">Delete</button>
-                                                        <button class="btn btn-primary" type="button" data-dismiss="modal">Cancel</button>
-                                                    </form>
+                                        <!-- delete Modal-->
+                                        <div class="modal fade" id="delet{{purchase.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">Ready to Delete?</h5>
+                                                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">×</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                    Select "Delete" below if you are ready to delete this item.
+                                                    <p class="text-danger"><span class="badge badge-danger mr-2">Warning: </span>This action will permanently delete your item.</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <form action="{{ purchase.get_delete_url}}" method="POST">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                                            <button class="btn btn-primary" type="button" data-dismiss="modal">Cancel</button>
+                                                        </form>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    
-                                {% endif %}
+                                        
+                                    {% endif %}
+                                </div>
                             </td>
                         </tr>
                         {% endfor %}
                     </tbody>
+
+                    <tbody id="returnedSearchTable" v-if="searchedData">
+                                <tr v-if="data.length < 1">
+                                    <th colspan="12">No Data Found.</th>
+                                </tr>
+
+                                <tr v-for="(item, index) in data" :key="index">
+                                    <td>[[ index+1 ]]</td>
+                                    <td>[[ item.product_name ]]</td>
+                                    <td>[[ item.quantity ]]</td>
+                                    <td>[[ item.price ]]</td>
+                                    <td>[[ item.price * item.quantity ]]</td>
+                                    <td>[[ supplierData.find(s => s.id === item.supplier_id).name ]]</td>
+                                    <td>[[ item.chalan_number ]]</td>
+                                    <td>[[ item.date_added ]]</td>
+                                    <td>
+                                        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                                            <div class="btn-group" role="group" aria-label="First group">
+                                                <a v-bind:href="'http://' + url + '/purchase/' + item.id + '/'" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a>
+
+                                                {% if request.user.is_superuser %}
+                                                <a class="btn btn-sm btn-outline-danger" href="#" data-toggle="modal" v-bind:data-target="'#delete' + item.id">
+                                                    <i class="fa fa-trash-alt"></i>
+                                                </a>
+
+                                                <!-- delete Modal-->
+                                                <div class="modal fade" v-bind:id="'delete' + item.id" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="exampleModalLabel">Ready to Delete?</h5>
+                                                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">×</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                            Select "Delete" below if you are ready to delete this item.
+                                                            <p class="text-danger"><span class="badge badge-danger mr-2">Warning: </span>This action will permanently delete your item.</p>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <form v-bind:action="'http://' + url + '/purchase/delete/' + item.id + '/'" method="POST">
+                                                                    {% csrf_token %}
+                                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                                    <button class="btn btn-primary" type="button" data-dismiss="modal">Cancel</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
                     
                 </table>
 
-                {% include './includes/pagination.html' %}
+                <div v-if="showPagination">
+                    {% include './includes/pagination.html' %}
+                </div>
                 
             </div>
         </div>
@@ -192,12 +258,22 @@
 
 {% block script %}
 
+
 <script type="text/javascript">
 
 const createPurchase = {
     data(){
         return{
             totalAmount: '',
+
+            //purchases search
+            searchedData: false,
+            showTable: true,
+            showPagination: true,
+            noData: false,
+            data: [],
+            supplierData: [],
+            url: '',
         }
     },
     methods: {
@@ -210,8 +286,41 @@ const createPurchase = {
             }else{
                 this.totalAmount = '';
             }
+        },
+
+        // search purchases
+        searchPurchaseProduct(){
+            this.url = window.location.host
+            const searchValue = document.getElementById('searchSellProduct').value
+            if (searchValue.trim().length > 0){
+                fetch("/purchases/search", {
+                    body: JSON.stringify({ searchPurchases: searchValue }),
+                    method: "POST",
+                })
+                .then((res) => res.json())
+                .then((data) => {
+                    this.showTable = false
+                    this.showPagination = false
+                    this.searchedData = true
+                    if (data.length === 0) {
+                        this.noData = true
+                    }else{
+                        this.data = data.purchases
+                        this.supplierData = data.suppliers
+                        console.log('data:', data)
+                        console.log('purchases:', this.data)
+                        console.log('suppliers:', this.suppliers)
+                    }
+                })
+            }else{
+                this.showTable = true
+                this.showPagination = true
+                this.searchedData = false
+            }
         }
     },
+
+
     delimiters: ['[[', ']]']
 }
 

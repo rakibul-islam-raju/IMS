@@ -45,7 +45,8 @@ urlpatterns = [
     path('charts/', ChartView.as_view(), name='charts'),
     path('sells/chart/', SellReportView.as_view(), name='report'),
     # search endpoints
-    path("sells/search", csrf_exempt(SellProductSearch.as_view()), name="sells-search")
+    path('sells/search', csrf_exempt(SellProductSearch.as_view()), name="sells-search"),
+    path('purchases/search', csrf_exempt(PurchaseProductSearch.as_view()), name="purchases-search"),
 ]
 
 admin.site.site_header = 'Inventory Admin Panel'
