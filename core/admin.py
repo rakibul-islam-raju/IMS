@@ -25,3 +25,4 @@ class PurchaseProductAdmin(admin.ModelAdmin):
 admin.site.register(Office)
 admin.site.register(Stock)
 admin.site.register(Supplier)
+admin.site.register(LoginExpire)

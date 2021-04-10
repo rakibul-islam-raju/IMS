@@ -153,6 +153,19 @@
 
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
+      {% if date_remaining <= 7 %}
+      <div class="row">
+        <div class="col text-center">
+          <div class="alert alert-sm {% if date_remaining <= 3 %}alert-danger{% else %}alert-warning{% endif %} alert-dismissible fade show mb-0" role="alert">
+            <strong>You have {{ date_remaining }} days remaining of your trail period.</strong>
+            {% comment %} Enf of trial preiod. Please contact admin {% endcomment %}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      {% endif %}
 
       <!-- Main Content -->
       <div id="content">

@@ -5,8 +5,18 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.contrib.sites.models import Site
 
 from datetime import datetime
+
+
+class LoginExpire(models.Model):
+    title = models.CharField(max_length=100)
+    message = models.CharField(max_length=100)
+    expire_date = models.DateField()
+
+    def __str__(self):
+        return self.title
 
 
 class Office(models.Model):
