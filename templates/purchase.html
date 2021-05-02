@@ -118,6 +118,9 @@
             <div class="row justify-content-end">
                 <div class="col-lg-4 text-right">
                     <input @keyup="searchPurchaseProduct()"  id="searchSellProduct" class="form-control mb-3" type="text" placeholder="Search here...">
+                    <div v-if="loading" class="spinner-border text-primary mb-2 loading" role="status">
+                        <span class="visually-hidden"></span>
+                    </div>
                 </div>
             </div>
             <div class="table-responsive">
@@ -272,6 +275,7 @@ const createPurchase = {
             data: [],
             supplierData: [],
             url: '',
+            loading: false,
         }
     },
     methods: {
@@ -288,6 +292,7 @@ const createPurchase = {
 
         // search purchases
         searchPurchaseProduct(){
+            this.loading = true
             this.url = window.location.host
             const searchValue = document.getElementById('searchSellProduct').value
             if (searchValue.trim().length > 0){
@@ -297,6 +302,7 @@ const createPurchase = {
                 })
                 .then((res) => res.json())
                 .then((data) => {
+                    this.loading = false
                     this.showTable = false
                     this.showPagination = false
                     this.searchedData = true
@@ -305,12 +311,10 @@ const createPurchase = {
                     }else{
                         this.data = data.purchases
                         this.supplierData = data.suppliers
-                        console.log('data:', data)
-                        console.log('purchases:', this.data)
-                        console.log('suppliers:', this.suppliers)
                     }
                 })
             }else{
+                this.loading = false
                 this.showTable = true
                 this.showPagination = true
                 this.searchedData = false

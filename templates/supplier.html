@@ -51,6 +51,9 @@
                 <div class="row justify-content-end">
                     <div class="col-lg-4 text-right">
                         <input @keyup="searchSuppliers()"  id="searchSupplier" class="form-control mb-3" type="text" placeholder="Search here...">
+                        <div v-if="loading" class="spinner-border text-primary mb-2 loading" role="status">
+                            <span class="visually-hidden"></span>
+                        </div>
                     </div>
                 </div>
                 <table class="table table-bordered" id="" width="100%" cellspacing="0">

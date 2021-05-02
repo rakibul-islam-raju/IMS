@@ -7,12 +7,14 @@ const search = {
             showPagination: true,
             noData: false,
             data: [],
-            url: ''
+            url: '',
+            loading: false
         }
     },
     methods: {
         // search sells
         searchSellProdyct(){
+            this.loading = true
             this.url = window.location.host
             const searchValue = document.getElementById('searchSellProduct').value
             if (searchValue.trim().length > 0){
@@ -22,6 +24,7 @@ const search = {
                 })
                 .then((res) => res.json())
                 .then((data) => {
+                    this.loading = false
                     this.showTable = false
                     this.showPagination = false
                     this.searchedData = true
@@ -32,6 +35,7 @@ const search = {
                     }
                 })
             }else{
+                this.loading = false
                 this.showTable = true
                 this.showPagination = true
                 this.searchedData = false
@@ -40,6 +44,7 @@ const search = {
 
         // suppliers search
         searchSuppliers(){
+            this.loading = true
             this.url = window.location.host
             const searchValue = document.getElementById('searchSupplier').value
 
@@ -50,6 +55,7 @@ const search = {
                 })
                 .then((res) => res.json())
                 .then((data) => {
+                    this.loading = false
                     this.showTable = false
                     this.showPagination = false
                     this.searchedData = true
@@ -60,6 +66,7 @@ const search = {
                     }
                 })
             }else{
+                this.loading = false
                 this.showTable = true
                 this.showPagination = true
                 this.searchedData = false
