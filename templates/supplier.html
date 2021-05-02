@@ -53,7 +53,7 @@
                         <input @keyup="searchSuppliers()"  id="searchSupplier" class="form-control mb-3" type="text" placeholder="Search here...">
                     </div>
                 </div>
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered" id="" width="100%" cellspacing="0">
                     <thead>
                     <tr>
                         <th>Sl No.</th>
@@ -72,11 +72,14 @@
                             <td>{{ supplier.phone }}</td>
                             <td>{{ supplier.description }}</td>
                             <td class="text-center">
-                                <a href="{{ supplier.get_update_url }}" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a>
-                                {% if request.user.is_superuser %}
-                                    <a class="btn btn-sm btn-outline-danger" href="#" data-toggle="modal" data-target="#delet{{supplier.id}}">
-                                        <i class="fa fa-trash-alt"></i>
-                                    </a>
+                                <div class="btn-group">
+                                    <a href="{{ supplier.get_update_url }}" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a>
+                                    {% if request.user.is_superuser %}
+                                        <a class="btn btn-sm btn-outline-danger" href="#" data-toggle="modal" data-target="#delet{{supplier.id}}">
+                                            <i class="fa fa-trash-alt"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
 
                                     <!-- delete Modal-->
                                     <div class="modal fade" id="delet{{supplier.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -103,7 +106,6 @@
                                         </div>
                                     </div>
                                     
-                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
@@ -128,34 +130,34 @@
                                                 <a class="btn btn-sm btn-outline-danger" href="#" data-toggle="modal" v-bind:data-target="'#delete' + item.id">
                                                     <i class="fa fa-trash-alt"></i>
                                                 </a>
+                                                {% endif %}
+                                            </div>
 
-                                                <!-- delete Modal-->
-                                                <div class="modal fade" v-bind:id="'delete' + item.id" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                    <div class="modal-dialog" role="document">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title" id="exampleModalLabel">Ready to Delete?</h5>
-                                                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                                                                    <span aria-hidden="true">×</span>
-                                                                </button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                            Select "Delete" below if you are ready to delete this item.
-                                                            <p class="text-danger"><span class="badge badge-danger mr-2">Warning: </span>This action will permanently delete your item.</p>
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <form v-bind:action="'http://' + url + '/suppliers/delete/' + item.id + '/'" method="POST">
-                                                                    {% csrf_token %}
-                                                                    <button type="submit" class="btn btn-danger">Delete</button>
-                                                                    <button class="btn btn-primary" type="button" data-dismiss="modal">Cancel</button>
-                                                                </form>
-                                                            </div>
+                                            <!-- delete Modal-->
+                                            <div class="modal fade" v-bind:id="'delete' + item.id" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabel">Ready to Delete?</h5>
+                                                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">×</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                        Select "Delete" below if you are ready to delete this item.
+                                                        <p class="text-danger"><span class="badge badge-danger mr-2">Warning: </span>This action will permanently delete your item.</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <form v-bind:action="'http://' + url + '/suppliers/delete/' + item.id + '/'" method="POST">
+                                                                {% csrf_token %}
+                                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                                                <button class="btn btn-primary" type="button" data-dismiss="modal">Cancel</button>
+                                                            </form>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                
-                                                {% endif %}
                                             </div>
+                                                
                                         </div>
                                     </td>
                                 </tr>
