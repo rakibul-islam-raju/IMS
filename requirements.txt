@@ -6,10 +6,12 @@ certifi==2020.6.20
 chardet==3.0.4
 defusedxml==0.6.0
 diff-match-patch==20200713
+dj-database-url==0.5.0
 Django==3.1.2
 django-allauth==0.42.0
 django-crispy-forms==1.9.2
 django-filter==2.4.0
+django-heroku==0.3.1
 django-import-export==2.4.0
 django-seed==0.2.2
 et-xmlfile==1.0.1
@@ -47,6 +49,7 @@ toml==0.10.1
 typed-ast==1.4.1
 urllib3==1.25.10
 webencodings==0.5.1
+whitenoise==5.3.0
 wrapt==1.12.1
 xhtml2pdf==0.2.5
 xlrd==1.2.0
