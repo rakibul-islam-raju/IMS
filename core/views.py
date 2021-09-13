@@ -1,12 +1,14 @@
+import json
+from datetime import date
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from datetime import datetime, timedelta
+from io import BytesIO
+
 from django.shortcuts import render, redirect, get_object_or_404, reverse
 from django.http import HttpResponse, JsonResponse
-from django.views.generic import (View,
-                                TemplateView,
-                                ListView,
-                                CreateView,
-                                DetailView,
-                                UpdateView,
-                                DeleteView)
+from django.views.generic import (
+    View, TemplateView, ListView, CreateView, DetailView, UpdateView, DeleteView)
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.messages.views import SuccessMessageMixin
@@ -14,13 +16,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.db.models import Sum, Count
-
-import json
-from datetime import date
-from django.template.loader import get_template
-from xhtml2pdf import pisa
-from datetime import datetime, timedelta
-from io import BytesIO
 
 from .models import *
 from .forms import *
@@ -86,9 +81,7 @@ class SupplierSearch(View):
         return JsonResponse(list(data), safe=False)
 
 
-class ChartView(TemplateView,
-                LoginRequiredMixin,
-                UserPassesTestMixin):
+class ChartView(TemplateView, LoginRequiredMixin, UserPassesTestMixin):
     template_name = 'charts.html'
 
     def get_context_data(self, **kwargs):
@@ -97,7 +90,7 @@ class ChartView(TemplateView,
         context["sells"] = SellProduct.objects.filter(is_active=True)
         context["purchases"] = PurchaseProduct.objects.filter(is_active=True)
         return context
-    
+
     def test_func(self):
         if self.request.user.is_staff:
             return True
@@ -132,35 +125,29 @@ def sell_invoice(request, *args, **kwargs):
 
 
 @login_required()
-def get_help(request):
+def contact(request):
     if request.method == 'POST':
         form = HelpcenterForm(request.POST or None)
         if form.is_valid():
-            # name = form.cleaned_data['name']
             subject = form.cleaned_data['subject']
             message = form.cleaned_data['message']
             email = form.cleaned_data['email']
             recipients = ['rakibul.islam7772588@gmail.com']
-
-            # final_message = f''
-
             send_mail(subject, message, email, recipients)
             messages.success(request, 'Email successfully sent.')
         else:
-            messages.warning(request, 'Something went wrong. Please try again.')
+            messages.warning(
+                request, 'Something went wrong. Please try again.')
     form = HelpcenterForm()
 
     context = {
-        'title': 'Help Center',
+        'title': 'Contact',
         'form': form
     }
-    return render(request, 'help.html', context)
+    return render(request, 'contact.html', context)
 
 
-class PurchaseProductReportView(LoginRequiredMixin,
-                                UserPassesTestMixin,
-                                SuccessMessageMixin,
-                                View):
+class PurchaseProductReportView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, View):
     def get(self, request, *args, **kwargs):
         last_month = datetime.today() - timedelta(days=30)
         # check for filter
@@ -169,8 +156,9 @@ class PurchaseProductReportView(LoginRequiredMixin,
             queryset = PurchaseProduct.objects.filter(is_active=True)
         else:
             # if not filtered
-            queryset = PurchaseProduct.objects.filter(is_active=True, date_added__gte=last_month)
-        
+            queryset = PurchaseProduct.objects.filter(
+                is_active=True, date_added__gte=last_month)
+
         query_filter = PurchaseProductFilter(self.request.GET, queryset)
         qs = query_filter.qs
 
@@ -228,10 +216,7 @@ class PurchaseProductReportView(LoginRequiredMixin,
         return False
 
 
-class SellProductReportView(LoginRequiredMixin,
-                        UserPassesTestMixin,
-                        SuccessMessageMixin,
-                        View):
+class SellProductReportView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, View):
     def get(self, request, *args, **kwargs):
         last_month = datetime.today() - timedelta(days=30)
         # check for filter
@@ -240,8 +225,9 @@ class SellProductReportView(LoginRequiredMixin,
             queryset = SellProduct.objects.filter(is_active=True)
         else:
             # if not filtered
-            queryset = SellProduct.objects.filter(is_active=True, date_added__gte=last_month)
-        
+            queryset = SellProduct.objects.filter(
+                is_active=True, date_added__gte=last_month)
+
         query_filter = SellProductFilter(self.request.GET, queryset)
         qs = query_filter.qs
 
@@ -319,20 +305,18 @@ class SellProductReportView(LoginRequiredMixin,
             'sack_count': sack_count,
         }
         return render(request, 'sell_report.html', context)
-    
+
     def test_func(self, *args, **kwargs):
         if self.request.user.is_staff:
             return True
         return False
 
 
-class SellReportView(LoginRequiredMixin,
-                    UserPassesTestMixin,
-                    SuccessMessageMixin,
-                    View):
+class SellReportView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, View):
 
     def get(self, request, *args, **kwargs):
-        f = SellProductFilter(self.request.GET, queryset=SellProduct.objects.filter(is_active=True))
+        f = SellProductFilter(
+            self.request.GET, queryset=SellProduct.objects.filter(is_active=True))
         # sells = SellProduct.objects.all(is_active=True)
         context = {
             # 'filter': f,
@@ -340,7 +324,7 @@ class SellReportView(LoginRequiredMixin,
             'title': 'Sell Report Chart',
         }
         return render(self.request, 'sell_report_chart.html', context)
-    
+
     def test_func(self, *args, **kwargs):
         if self.request.user.is_staff:
             return True
@@ -348,7 +332,7 @@ class SellReportView(LoginRequiredMixin,
 
 
 class HomeView(LoginRequiredMixin,
-            ListView):
+               ListView):
     template_name = 'index.html'
     model = Stock
     queryset = Stock.objects.filter(is_active=True)
@@ -357,15 +341,17 @@ class HomeView(LoginRequiredMixin,
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["stocks"] = Stock.objects.filter(is_active=True)
+        context["sells"] = SellProduct.objects.filter(is_active=True)
         context["total_stocks"] = Stock.objects.filter(is_active=True).count()
-        context["total_sells"] = SellProduct.objects.filter(is_active=True).count()
-        context["total_purchases"] = PurchaseProduct.objects.filter(is_active=True).count()
+        context["total_sells"] = SellProduct.objects.filter(
+            is_active=True).count()
+        context["total_purchases"] = PurchaseProduct.objects.filter(
+            is_active=True).count()
         return context
 
 
-class UserManagement(LoginRequiredMixin,
-                    UserPassesTestMixin,
-                    View):
+class UserManagement(LoginRequiredMixin, UserPassesTestMixin, View):
     def get(self, *args, **kwargs):
         users = User.objects.all()
         context = {
@@ -373,17 +359,14 @@ class UserManagement(LoginRequiredMixin,
             'title': 'User Management',
         }
         return render(self.request, 'users.html', context)
-    
+
     def test_func(self, *args, **kwargs):
         if self.request.user.is_staff:
             return True
         return False
 
 
-class EditUserManagent(LoginRequiredMixin,
-                    UserPassesTestMixin,
-                    SuccessMessageMixin,
-                    UpdateView):
+class EditUserManagent(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
     model = User
     form_class = UserPermissionForm
     template_name = 'edit-user.html'
@@ -399,17 +382,14 @@ class EditUserManagent(LoginRequiredMixin,
 
     def get_success_url(self, **kwargs):
         return reverse(self.success_url)
-    
+
     def test_func(self, *args, **kwargs):
         if self.request.user.is_superuser:
             return True
         return False
 
 
-class SupplierCreateView(LoginRequiredMixin,
-                        UserPassesTestMixin,
-                        SuccessMessageMixin,
-                        View):
+class SupplierCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, View):
     model = Supplier
     template_name = 'supplier.html'
 
@@ -432,19 +412,19 @@ class SupplierCreateView(LoginRequiredMixin,
             'title': 'New Supplier',
             'form': SupplierCreateForm()
         }
-        
+
         return render(self.request, 'supplier.html', context)
 
     def post(self, *args, **kwargs):
         form = SupplierCreateForm(self.request.POST or None)
-        
+
         if form.is_valid():
             form.save()
 
-            messages.success(self.request, 'Supplier created successfully')        
+            messages.success(self.request, 'Supplier created successfully')
             return redirect('supplier')
 
-        messages.warning(self.request, 'Invalid form')        
+        messages.warning(self.request, 'Invalid form')
         return redirect('supplier')
 
     def test_func(self):
@@ -453,10 +433,7 @@ class SupplierCreateView(LoginRequiredMixin,
         return False
 
 
-class SupplierModalCreate(LoginRequiredMixin,
-                        UserPassesTestMixin,
-                        SuccessMessageMixin,
-                        CreateView):
+class SupplierModalCreate(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, CreateView):
     model = Supplier
     queryset = Supplier.objects.all()
     form_class = SupplierCreateForm
@@ -472,10 +449,7 @@ class SupplierModalCreate(LoginRequiredMixin,
         return False
 
 
-class PurchaseProductCreateView(LoginRequiredMixin,
-                                UserPassesTestMixin,
-                                SuccessMessageMixin,
-                                View):
+class PurchaseProductCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, View):
     model = PurchaseProduct
     template_name = 'purchase.html'
 
@@ -499,7 +473,7 @@ class PurchaseProductCreateView(LoginRequiredMixin,
             'form': PurchaseCreateForm(),
             'supplier_form': SupplierCreateForm()
         }
-        
+
         return render(self.request, 'purchase.html', context)
 
     def post(self, *args, **kwargs):
@@ -510,10 +484,11 @@ class PurchaseProductCreateView(LoginRequiredMixin,
             new_purchase.added_by = self.request.user
             new_purchase.save()
 
-            messages.success(self.request, f'{new_purchase.product_name} created successfully')        
+            messages.success(
+                self.request, f'{new_purchase.product_name} created successfully')
             return redirect('purchase')
 
-        messages.warning(self.request, 'Invalid form')        
+        messages.warning(self.request, 'Invalid form')
         return redirect('purchase')
 
     def test_func(self):
@@ -522,10 +497,7 @@ class PurchaseProductCreateView(LoginRequiredMixin,
         return False
 
 
-class StockCreateView(LoginRequiredMixin,
-                    UserPassesTestMixin,
-                    SuccessMessageMixin,
-                    View):
+class StockCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, View):
     model = Stock
     template_name = 'stock.html'
 
@@ -548,21 +520,22 @@ class StockCreateView(LoginRequiredMixin,
             'title': 'New Stock',
             'form': StockCreateForm()
         }
-        
+
         return render(self.request, 'stock.html', context)
 
     def post(self, *args, **kwargs):
         form = StockCreateForm(self.request.POST or None)
-        
+
         if form.is_valid():
             new_stock = form.save(commit=False)
             new_stock.added_by = self.request.user
             new_stock.save()
 
-            messages.success(self.request, f'{new_stock.product_name} created successfully')        
+            messages.success(
+                self.request, f'{new_stock.product_name} created successfully')
             return redirect('stock')
 
-        messages.warning(self.request, 'Invalid form')        
+        messages.warning(self.request, 'Invalid form')
         return redirect('stock')
 
     def test_func(self):
@@ -571,10 +544,7 @@ class StockCreateView(LoginRequiredMixin,
         return False
 
 
-class SellsListView(LoginRequiredMixin,
-                    UserPassesTestMixin,
-                    SuccessMessageMixin,
-                    ListView):
+class SellsListView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, ListView):
     model = SellProduct
     # queryset = SellProduct.objects.filter(is_staff=True)
     context_object_name = 'sells'
@@ -592,10 +562,7 @@ class SellsListView(LoginRequiredMixin,
         return False
 
 
-class SellProductCreateView(LoginRequiredMixin,
-                        UserPassesTestMixin,
-                        SuccessMessageMixin,
-                        CreateView):
+class SellProductCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, CreateView):
     model = SellProduct
     form_class = SellProductCreateForm
     template_name = 'sell-create.html'
@@ -608,7 +575,8 @@ class SellProductCreateView(LoginRequiredMixin,
         if self.request.is_ajax():
             if form.is_valid():
                 product_name = form.cleaned_data.get('product_name')
-                product_instance = get_object_or_404(Stock, product_name=product_name)
+                product_instance = get_object_or_404(
+                    Stock, product_name=product_name)
                 quantity = form.cleaned_data.get('quantity')
 
                 if quantity <= product_instance.quantity:
@@ -624,27 +592,6 @@ class SellProductCreateView(LoginRequiredMixin,
             else:
                 return JsonResponse({'msg': form.errors.as_data()})
 
-        # if form.is_valid():
-        #     product_name = form.cleaned_data.get('product_name')
-        #     product_instance = get_object_or_404(Stock, product_name=product_name)
-        #     quantity = form.cleaned_data.get('quantity')
-
-        #     if quantity <= product_instance.quantity:
-        #         sell = form.save(commit=False)
-        #         sell.added_by = self.request.user
-        #         sell.save()
-
-        #         new_qntty = product_instance.quantity - quantity
-        #         product_instance.quantity = new_qntty
-        #         product_instance.save(update_fields=['quantity'])
-        #         messages.success(self.request, f'{product_instance.product_name} sold successfully')        
-        #         return redirect('sell-create')
-        #     else:
-        #         messages.warning(self.request, 'Invalid Qunatity')
-        #         return redirect('sell-create')
-        # messages.warning(self.request, 'Invalid form')        
-        # return redirect('sell-create')
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = 'New Sale'
@@ -654,21 +601,13 @@ class SellProductCreateView(LoginRequiredMixin,
     def get_success_url(self, **kwargs):
         return reverse(self.success_url)
 
-    # def form_valid(self, form):
-    #     form.instance.added_by = self.request.user
-    #     form.instance.save()
-    #     return super(SellProductCreateView, self).form_valid(form)
-
     def test_func(self):
         if self.request.user.is_staff:
             return True
         return False
 
 
-class SellProductByID(LoginRequiredMixin,
-                        UserPassesTestMixin,
-                        SuccessMessageMixin,
-                        View):
+class SellProductByID(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, View):
 
     def get(self, *args, **kwargs):
         product_instance = get_object_or_404(Stock, pk=self.kwargs['pk'])
@@ -696,15 +635,15 @@ class SellProductByID(LoginRequiredMixin,
                 new_qntty = product_instance.quantity - quantity
                 product_instance.quantity = new_qntty
                 product_instance.save(update_fields=['quantity'])
-                messages.success(self.request, f'{product_instance.product_name} sold successfully')        
+                messages.success(
+                    self.request, f'{product_instance.product_name} sold successfully')
                 return redirect('sell-list')
             else:
                 messages.warning(self.request, 'Invalid Qunatity')
                 return redirect('./')
         else:
-            messages.warning(self.request, 'Invalid Form')        
+            messages.warning(self.request, 'Invalid Form')
             return redirect('./')
-
 
     def test_func(self):
         if self.request.user.is_staff:
@@ -714,10 +653,7 @@ class SellProductByID(LoginRequiredMixin,
 
 # ============ update view ===========
 
-class SupplierUpdateView(LoginRequiredMixin,
-                        UserPassesTestMixin,
-                        SuccessMessageMixin,
-                        UpdateView):
+class SupplierUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
     model = Supplier
     form_class = SupplierCreateForm
     template_name = 'supplier.html'
@@ -743,22 +679,19 @@ class SupplierUpdateView(LoginRequiredMixin,
             'title': 'New Supplier',
             'form': SupplierCreateForm(instance=self.get_object())
         }
-        
+
         return render(self.request, 'supplier.html', context)
-    
+
     def get_success_url(self, **kwargs):
         return reverse(self.success_url)
-    
+
     def test_func(self):
         if self.request.user.is_staff:
             return True
         return False
 
 
-class PurchaseProductUpdateView(LoginRequiredMixin,
-                                UserPassesTestMixin,
-                                SuccessMessageMixin,
-                                UpdateView):
+class PurchaseProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
     model = PurchaseProduct
     form_class = PurchaseCreateForm
     template_name = 'purchase.html'
@@ -790,17 +723,14 @@ class PurchaseProductUpdateView(LoginRequiredMixin,
 
     def get_success_url(self, **kwargs):
         return reverse(self.success_url)
-    
+
     def test_func(self):
         if self.request.user.is_staff:
             return True
         return False
 
 
-class StockUpdateView(LoginRequiredMixin,
-                    UserPassesTestMixin,
-                    SuccessMessageMixin,
-                    UpdateView):
+class StockUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
     model = Stock
     form_class = StockCreateForm
     template_name = 'stock.html'
@@ -826,22 +756,19 @@ class StockUpdateView(LoginRequiredMixin,
             'title': 'New Stock',
             'form': StockCreateForm(instance=self.get_object())
         }
-        
+
         return render(self.request, 'stock.html', context)
-    
+
     def get_success_url(self, **kwargs):
         return reverse(self.success_url)
-    
+
     def test_func(self):
         if self.request.user.is_staff:
             return True
         return False
 
 
-class SellProductUpdateView(LoginRequiredMixin,
-                            UserPassesTestMixin,
-                            SuccessMessageMixin,
-                            UpdateView):
+class SellProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
     model = SellProduct
     form_class = SellProductCreateForm
     template_name = 'sell-create.html'
@@ -852,10 +779,10 @@ class SellProductUpdateView(LoginRequiredMixin,
         context = super().get_context_data(**kwargs)
         context["title"] = 'Edit Sale'
         return context
-    
+
     def get_success_url(self, **kwargs):
         return reverse(self.success_url)
-    
+
     def test_func(self):
         if self.request.user.is_staff:
             return True
@@ -864,10 +791,7 @@ class SellProductUpdateView(LoginRequiredMixin,
 
 # ========== delete views ==============
 
-class SupplierDeleteView(LoginRequiredMixin,
-                                UserPassesTestMixin,
-                                SuccessMessageMixin,
-                                DeleteView):
+class SupplierDeleteView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, DeleteView):
     model = Supplier
     template_name = 'supplier.html'
     success_url = 'supplier'
@@ -875,17 +799,14 @@ class SupplierDeleteView(LoginRequiredMixin,
 
     def get_success_url(self, **kwargs):
         return reverse(self.success_url)
-    
+
     def test_func(self):
         if self.request.user.is_superuser:
             return True
         return False
 
 
-class PurchaseProductDeleteView(LoginRequiredMixin,
-                                UserPassesTestMixin,
-                                SuccessMessageMixin,
-                                DeleteView):
+class PurchaseProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, DeleteView):
     model = PurchaseProduct
     template_name = 'purchase.html'
     success_url = 'purchase'
@@ -893,17 +814,14 @@ class PurchaseProductDeleteView(LoginRequiredMixin,
 
     def get_success_url(self, **kwargs):
         return reverse(self.success_url)
-    
+
     def test_func(self):
         if self.request.user.is_superuser:
             return True
         return False
 
 
-class StockDeleteView(LoginRequiredMixin,
-                    UserPassesTestMixin,
-                    SuccessMessageMixin,
-                    DeleteView):
+class StockDeleteView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, DeleteView):
     model = Stock
     template_name = 'stock.html'
     success_url = 'stock'
@@ -911,17 +829,14 @@ class StockDeleteView(LoginRequiredMixin,
 
     def get_success_url(self, **kwargs):
         return reverse(self.success_url)
-    
+
     def test_func(self):
         if self.request.user.is_superuser:
             return True
         return False
 
 
-class SellProductDeleteView(LoginRequiredMixin,
-                            UserPassesTestMixin,
-                            SuccessMessageMixin,
-                            DeleteView):
+class SellProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, DeleteView):
     model = SellProduct
     template_name = 'sell.html'
     success_url = 'sell-list'
@@ -929,7 +844,7 @@ class SellProductDeleteView(LoginRequiredMixin,
 
     def get_success_url(self, **kwargs):
         return reverse(self.success_url)
-    
+
     def test_func(self):
         if self.request.user.is_superuser:
             return True

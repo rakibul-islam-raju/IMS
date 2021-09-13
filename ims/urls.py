@@ -13,7 +13,7 @@ urlpatterns = [
     # auth
     path('accounts/', include('allauth.urls')),
     # help
-    path('help/', get_help, name='help'),
+    path('contact/', contact, name='contact'),
     # home & user management
     path('', HomeView.as_view(), name='home'),
     path('users/', UserManagement.as_view(), name='user'),
