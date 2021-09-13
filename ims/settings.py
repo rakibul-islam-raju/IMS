@@ -12,10 +12,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '2gi5vzt084l1#kb-704@(!pl!$lha3v37bwt*psx=k4@283%$e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'inventory.nexbuzzy.com', 'www.inventory.nexbuzzy.com']
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -81,15 +80,8 @@ WSGI_APPLICATION = 'ims.wsgi.application'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'nexbpthc_tafsir_inventory',
-        'USER': 'nexbpthc_tafsir_user',
-        'PASSWORD': 'tafsir_user',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
@@ -163,13 +155,16 @@ AUTH_USER_MODEL = 'core.User'
 IMPORT_EXPORT_USE_TRANSACTIONS = True
 
 # email backend
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'mail.rakibul-islam.nexbuzzy.com'
-# EMAIL_USE_TLS = False
-# EMAIL_PORT = 26
-# EMAIL_HOST_USER = 'dev@rakibul-islam.nexbuzzy.com' # Ex: info@pure.com
-# EMAIL_HOST_PASSWORD = 'raju7772588RAJU' # for the email you created through cPanel. The password for that
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# gmail_send/settings.py
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'rakibul.islam44109@gmail.com'
+EMAIL_HOST_PASSWORD = 'mzomiwfqeytlhaly'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'rakibul.islam44109@gmail.com'
+
 
 # if DEBUG:
 #     EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
@@ -181,6 +176,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # else:
 #     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-
+#
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
