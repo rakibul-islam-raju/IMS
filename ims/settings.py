@@ -26,7 +26,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'django.contrib.sites',
 
     # third party
@@ -37,6 +36,7 @@ INSTALLED_APPS = [
     'django_filters',
     'django_seed',
     'import_export',
+    'admin_honeypot',
 
     # local
     'core',
