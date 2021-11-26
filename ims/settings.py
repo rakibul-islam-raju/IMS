@@ -1,6 +1,10 @@
 import os
 from pathlib import Path
+
 import django_heroku
+
+from dotenv import load_dotenv
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -10,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '2gi5vzt084l1#kb-704@(!pl!$lha3v37bwt*psx=k4@283%$e'
+SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -121,7 +125,6 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static_files')]
@@ -157,27 +160,15 @@ IMPORT_EXPORT_USE_TRANSACTIONS = True
 
 # email backend
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# gmail_send/settings.py
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'rakibul.islam44109@gmail.com'
-EMAIL_HOST_PASSWORD = 'mzomiwfqeytlhaly'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'rakibul.islam44109@gmail.com'
+EMAIL_HOST = str(os.getenv('EMAIL_HOST'))
+EMAIL_HOST_USER = str(os.getenv('EMAIL_HOST_USER'))
+EMAIL_HOST_PASSWORD = str(os.getenv('EMAIL_HOST_PASSWORD'))
+EMAIL_PORT = int(os.getenv('EMAIL_PORT'))
+EMAIL_USE_TLS = bool(os.getenv('EMAIL_USE_TLS'))
+DEFAULT_FROM_EMAIL = str(os.getenv('DEFAULT_FROM_EMAIL'))
 
-
-# if DEBUG:
-#     EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
-#     EMAIL_HOST = 'rakibul-islam.nexbuzzy.com '
-#     EMAIL_USE_TLS = False
-#     EMAIL_PORT = 465 #This will be different based on your Host, for Namecheap I use this`
-#     EMAIL_HOST_USER = 'dev@rakibul-islam.nexbuzzy.com' # Ex: info@pure.com
-#     EMAIL_HOST_PASSWORD = 'raju7772588RAJU' # for the email you created through cPanel. The password for that
-# else:
-#     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-#
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 
